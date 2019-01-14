@@ -1,0 +1,44 @@
+<RCC>
+    <qresource prefix="/hty">
+        <file alias="na">icon/hty/na.png</file>
+        <file alias="01d">icon/hty/01d.png</file>
+        <file alias="02d">icon/hty/02d.png</file>
+        <file alias="03d">icon/hty/03d.png</file>
+        <file alias="04d">icon/hty/04d.png</file>
+        <file alias="09d">icon/hty/09d.png</file>
+        <file alias="10d">icon/hty/10d.png</file>
+        <file alias="11d">icon/hty/11d.png</file>
+        <file alias="13d">icon/hty/13d.png</file>
+        <file alias="50d">icon/hty/50d.png</file>
+        <file alias="01n">icon/hty/01n.png</file>
+        <file alias="02n">icon/hty/02n.png</file>
+        <file alias="03n">icon/hty/03n.png</file>
+        <file alias="04n">icon/hty/04n.png</file>
+        <file alias="09n">icon/hty/09n.png</file>
+        <file alias="10n">icon/hty/10n.png</file>
+        <file alias="11n">icon/hty/11n.png</file>
+        <file alias="13n">icon/hty/13n.png</file>
+        <file alias="50n">icon/hty/50n.png</file>
+    </qresource>
+    <qresource prefix="/gray">
+        <file alias="na">icon/gray/na.png</file>
+        <file alias="01d">icon/gray/01d.png</file>
+        <file alias="02d">icon/gray/02d.png</file>
+        <file alias="03d">icon/gray/03d.png</file>
+        <file alias="04d">icon/gray/04d.png</file>
+        <file alias="09d">icon/gray/09d.png</file>
+        <file alias="10d">icon/gray/10d.png</file>
+        <file alias="11d">icon/gray/11d.png</file>
+        <file alias="13d">icon/gray/13d.png</file>
+        <file alias="50d">icon/gray/50d.png</file>
+        <file alias="01n">icon/gray/01n.png</file>
+        <file alias="02n">icon/gray/02n.png</file>
+        <file alias="03n">icon/gray/03n.png</file>
+        <file alias="04n">icon/gray/04n.png</file>
+        <file alias="09n">icon/gray/09n.png</file>
+        <file alias="10n">icon/gray/10n.png</file>
+        <file alias="11n">icon/gray/11n.png</file>
+        <file alias="13n">icon/gray/13n.png</file>
+        <file alias="50n">icon/gray/50n.png</file>
+    </qresource>
+</RCC>

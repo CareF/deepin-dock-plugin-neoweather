@@ -1,0 +1,244 @@
+#ifndef WEATHERCLIENT_H
+#define WEATHERCLIENT_H
+
+#include <QObject>
+#include <QPointer>
+#include <QDateTime>
+// #include <QFile>
+// #include <QStandardPaths>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QTimer>
+#include <QFlags>
+
+/**
+ * \brief An abstract Qt interface for openweathermap.org API
+ *
+ * \details This class Provides a Qt interface for managing the network to
+ * openweathermap request using the provied QNetworkAccessManager pointer
+ * during consctruction.
+ *
+ * The class relies on reference to external QNetworkAccessManager and a
+ * QTextStream as a log output. Parent of the class should promise both exist
+ * during the class' life time.
+ *
+ * The class has a network timer but timeout should be handled by its heirs.
+ *
+ */
+class OpenWeatherClient : public QObject
+{
+    Q_OBJECT
+public:
+    OpenWeatherClient(QNetworkAccessManager &net,
+                      QTextStream &logStream,
+                      QObject *parent = nullptr);
+    //    static QString logPath() {
+    //        return QStandardPaths::standardLocations(
+    //                    QStandardPaths::CacheLocation).first()
+    //                + "/dock_plugin_weather.log";}
+
+    bool ischecking() const {return checking;}
+
+    struct CityInfo {
+        int id; QString name; QString country;
+        double lat; double lon; // longitude and latitude
+    };
+    struct Weather {
+        // See https://openweathermap.org/current for more info
+        QDateTime date;
+        QString weather; QString description; QString icon;
+        double temp; double temp_min; double temp_max;
+        double pressure; int humidity; double wind; int windDeg;
+        int clouds;
+    };
+    enum ErrorCode {
+        NoValidJson,
+        NoJsonList,
+        NetWorkTimeOut,
+        AlreadyChecking
+    };
+
+signals:
+    /** error() can mean timeout (NetWorkTimeOut),
+     * network error (NoValidJson)
+     * or jsonparse error (NoValidJson or NoJsonList) */
+    void error(ErrorCode);
+
+protected slots:
+    virtual void errorHandle(ErrorCode) = 0;
+
+protected:
+    QTextStream &log;
+    static QString appid;
+    bool checking;
+    QTimer netTimer;
+
+    QNetworkReply *netRequest(const QString type, const QString &options);
+    QByteArray netResult(QPointer<QNetworkReply> reply);
+
+private:
+    QNetworkAccessManager &netmgr;
+};
+
+
+/**
+ * \brief A Qt interface for openweathermap.org API weather and forecast
+ *
+ *
+ * \details
+ * This class Provides a Qt interface and managing the network request
+ * using the provied QNetworkAccessManager pointer when consctructing.
+ * See OpenWeatherCliet for network management and logging details.
+ *
+ * The asynchronous I/O for network request is based on SIGNAL of
+ * QNetowrkReply, so it's not necessary for multi-threading or create an
+ * EventLoop. During network requirement, the class has its own timeout
+ * clock, with default time 1min. error() is emitted when timeout.
+ * When update() is waiting for reply, ischecking() = true
+ * and update SLOT will not respond to SIGNALs. When it finishes,
+ * weatherReady() and forecastReady() SIGNAL is emitted if parsing of the
+ * reply is sucessful, otherwise error() is emitted.
+ *
+ * The request for openweathermap API is done by cityid unless it's 0,
+ * but cached city and country name information is always saved.
+ * The class doens't promise their consistency until update() is called
+ * and weatherReady() is emitted.
+ *
+ * For i18n, the language is decided by QLocale::system().name() when the
+ * class is constructed and supported by openweathermap API.
+ *
+ * \note
+ * logStream and net is external and they have to be alive during the class's
+ * lifetime.
+ *
+ */
+class WeatherClient : public OpenWeatherClient
+{
+    Q_OBJECT
+public:
+    explicit WeatherClient(QNetworkAccessManager &net,
+                           QTextStream &logStream,
+                           int cityid=0,
+                           const QString &city="",
+                           const QString &country="",
+                           bool ismetric=true,
+                           QObject *parent = nullptr);
+    virtual ~WeatherClient() override;
+
+    int cityID() const {return cityid;}
+    const QString &cityName() const {return city;}
+    const QString &countryName() const {return country;}
+    const QDateTime &lastUpdate() const {return last;}
+    const QString &weatherNowText() const {return wnow.weather;}
+    const QString &weatherNowDesc() const {return wnow.description;}
+    const QString &weatherNowIcon() const {return wnow.icon;}
+    inline QString tempUnit() const {return isMetric? "°C" : "°F";}
+    inline QString windUnit() const {return isMetric? "m/s" : "mi/h";}
+    QString tempNow() const {
+        return QString::number(forecasts[0].temp, 'f', 1) + tempUnit();}
+    QString tipNow() const {
+        return QString("%1, %2\n%3\n%4 - %5%6\n").arg(city).arg(
+                    country).arg(wnow.description).arg(wnow.temp_min).arg(
+                    wnow.temp_min).arg(tempUnit()) +
+                tr("Humidity: %1%%\n").arg(wnow.humidity) +
+                tr("Wind: %1%2, %3°\n").arg(wnow.wind, 0, 'f', 1).arg(
+                    windUnit()).arg(wnow.windDeg) +
+                tr("Last Check: %3").arg(wnow.date.toString("HH:mm:ss"));
+    }
+    const QVector<Weather> &getForecast() const {return forecasts;}
+
+    /** set unit and update cached weather info */
+    void setMetric(bool is);
+    /** set city and update cached weather */
+    void setCity(const QString &icity, const QString &icountry) {
+        cityid = 0; city = icity; country = icountry; update();}
+    void setCity(int id) {cityid = id; update();}
+    void setCity(const CityInfo &info) {
+        cityid = info.id; city = info.name; country = info.country;
+        update();}
+
+signals:
+    /** Asynchronous signal after calling update(), with weatherNow ready */
+    void weatherReady();
+    /** Asynchronous signal after calling update(), with forecasts ready */
+    void forecastReady();
+    /** changed() means sth. other than weatherReady or forwcastReady, e.g. unit */
+    void changed();
+
+public slots:
+    /** Start a request for update forecast information,
+     * and according to #cityid, update #city and #country. */
+    void update(int timeout = 60000);  //1min for timeout
+
+private slots:
+    void parseWeather();
+    void parseForecast();
+    void errorHandle(ErrorCode) override;
+    void statusUpdate();
+
+private:
+    QPointer<QNetworkReply> weatherReply;
+    QPointer<QNetworkReply> forecastReply;
+    int cityid;
+    QString city;
+    QString country;
+    bool isMetric; // imperial or metric
+    QString lang;
+    QDateTime last;
+    QVector<Weather> forecasts;
+    Weather wnow;
+    enum Status {
+        NoneDone = 0x0000,
+        WeatherDone = 0x0001,
+        ForecastDone = 0x0002,
+        AllDone = WeatherDone & ForecastDone
+    } ;
+    QFlags<Status> status;
+
+};
+
+/**
+ * \brief A Qt interface for openweathermap.org API find
+ *
+ *
+ * \details
+ * This class Provides a Qt interface and managing the network request
+ * using the provied QNetworkAccessManager pointer when consctructing.
+ * See OpenWeatherCliet for network management and logging details.
+ *
+ * Same as WeatherClient the asynchronous I/O for network request is based
+ * on SIGNAL of QNetowrkReply. When it finishes, foundCity(const QList<CityInfo> &)
+ * SIGNAL is emitted if parsing of the reply is sucessful, otherwise error() is
+ * emitted.
+ *
+ * \note
+ * logStream and net is external and they have to be alive during the class's
+ * lifetime.
+ *
+ */
+class CityLookup : public OpenWeatherClient
+{
+    Q_OBJECT
+public:
+    explicit CityLookup(QNetworkAccessManager &net,
+                        QTextStream &logStream,
+                        QObject *parent = nullptr):
+        OpenWeatherClient(net, logStream, parent) {}
+    virtual ~CityLookup() override;
+
+signals:
+    /** Asynchronous result signal after calling lookForCity() */
+    void foundCity(const QList<CityInfo> &);
+
+public slots:
+    void lookForCity(const QString &city, const QString &country, int timeout = 60000) ;
+
+private slots:
+    void parseCityInfo();
+    void errorHandle(ErrorCode) override;
+
+private:
+    QPointer<QNetworkReply> netReply;
+};
+
+#endif // WEATHERCLIENT_H
