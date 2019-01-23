@@ -45,7 +45,7 @@ public:
     };
     struct Weather {
         // See https://openweathermap.org/current for more info
-        QDateTime date;
+        QDateTime dateTime;
         QString weather; QString description; QString icon;
         double temp; double temp_min; double temp_max;
         double pressure; int humidity; double wind; int windDeg;
@@ -53,9 +53,11 @@ public:
     };
     enum ErrorCode {
         NoValidJson,
-        NoJsonList,
+        JsonNoList,
+        JsonBadWeather,
         NetWorkTimeOut,
-        AlreadyChecking
+        AlreadyChecking,
+        NoGeoInfo
     };
 
 signals:
@@ -94,15 +96,15 @@ private:
  * QNetowrkReply, so it's not necessary for multi-threading or create an
  * EventLoop. During network requirement, the class has its own timeout
  * clock, with default time 1min. error() is emitted when timeout.
- * When update() is waiting for reply, ischecking() = true
+ * When checkWeather() is waiting for reply, ischecking() = true
  * and update SLOT will not respond to SIGNALs. When it finishes,
  * weatherReady() and forecastReady() SIGNAL is emitted if parsing of the
  * reply is sucessful, otherwise error() is emitted.
  *
  * The request for openweathermap API is done by cityid unless it's 0,
  * but cached city and country name information is always saved.
- * The class doens't promise their consistency until update() is called
- * and weatherReady() is emitted.
+ * The class doens't promise their consistency until checkWeather() is
+ * called and weatherReady() is emitted.
  *
  * For i18n, the language is decided by QLocale::system().name() when the
  * class is constructed and supported by openweathermap API.
@@ -135,15 +137,14 @@ public:
     inline QString tempUnit() const {return isMetric? "°C" : "°F";}
     inline QString windUnit() const {return isMetric? "m/s" : "mi/h";}
     QString tempNow() const {
-        return QString::number(forecasts[0].temp, 'f', 1) + tempUnit();}
+        return QString::number(wnow.temp, 'f', 1) + tempUnit();}
     QString tipNow() const {
-        return QString("%1, %2\n%3\n%4 - %5%6\n").arg(city).arg(
-                    country).arg(wnow.description).arg(wnow.temp_min).arg(
-                    wnow.temp_min).arg(tempUnit()) +
-                tr("Humidity: %1%%\n").arg(wnow.humidity) +
+        return QString("%1, %2\n%3 %4\n").arg(city).arg(
+                    country).arg(wnow.description).arg(tempNow()) +
+                tr("Humidity: %1%\n").arg(wnow.humidity) +
                 tr("Wind: %1%2, %3°\n").arg(wnow.wind, 0, 'f', 1).arg(
                     windUnit()).arg(wnow.windDeg) +
-                tr("Last Check: %3").arg(wnow.date.toString("HH:mm:ss"));
+                tr("Last Check: %3").arg(last.toString("HH:mm:ss"));
     }
     const QVector<Weather> &getForecast() const {return forecasts;}
 
@@ -151,16 +152,16 @@ public:
     void setMetric(bool is);
     /** set city and update cached weather */
     void setCity(const QString &icity, const QString &icountry) {
-        cityid = 0; city = icity; country = icountry; update();}
-    void setCity(int id) {cityid = id; update();}
+        cityid = 0; city = icity; country = icountry; checkWeather();}
+    void setCity(int id) {cityid = id; checkWeather();}
     void setCity(const CityInfo &info) {
         cityid = info.id; city = info.name; country = info.country;
-        update();}
+        checkWeather();}
 
 signals:
-    /** Asynchronous signal after calling update(), with weatherNow ready */
+    /** Asynchronous signal after calling checkWeather(), with weatherNow ready */
     void weatherReady();
-    /** Asynchronous signal after calling update(), with forecasts ready */
+    /** Asynchronous signal after calling checkWeather(), with forecasts ready */
     void forecastReady();
     /** changed() means sth. other than weatherReady or forwcastReady, e.g. unit */
     void changed();
@@ -168,13 +169,12 @@ signals:
 public slots:
     /** Start a request for update forecast information,
      * and according to #cityid, update #city and #country. */
-    void update(int timeout = 60000);  //1min for timeout
+    void checkWeather(int timeout = 60000);  //1min for timeout
 
 private slots:
     void parseWeather();
     void parseForecast();
     void errorHandle(ErrorCode) override;
-    void statusUpdate();
 
 private:
     QPointer<QNetworkReply> weatherReply;

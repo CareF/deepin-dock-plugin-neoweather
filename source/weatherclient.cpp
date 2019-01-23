@@ -16,6 +16,8 @@ OpenWeatherClient::OpenWeatherClient(QNetworkAccessManager &net,
         netTimer.setSingleShot(true);
         netTimer.callOnTimeout([this](){
             this->errorHandle(NetWorkTimeOut);});
+        connect(this, SIGNAL(error(ErrorCode)),
+                this, SLOT(errorHandle(ErrorCode)));
 }
 
 QNetworkReply *OpenWeatherClient::netRequest(const QString type,
@@ -36,17 +38,17 @@ inline void cleanNetworkReply(QPointer<QNetworkReply> reply) {
         reply->deleteLater();
     }
 }
-#define LOGMAX 144
+#define LOGMAX 512
 QByteArray OpenWeatherClient::netResult(QPointer<QNetworkReply> reply) {
     netTimer.stop();
     QByteArray result = reply->readAll();
     cleanNetworkReply(reply);
     if (result.length() > LOGMAX) {
-        log << (QString("Get reply: ...") +
-                (result.constData() - LOGMAX)) << endl;
+        log << QString("Get reply: ...") <<
+                (result.constData() + result.length() - LOGMAX) << endl;
     }
     else {
-        log << (QString("Get reply: ") + result) << endl;
+        log << QString("Get reply: ") << result << endl;
     }
     return result;
 }
@@ -65,8 +67,13 @@ WeatherClient::WeatherClient(QNetworkAccessManager &net,
     weatherReply(nullptr), forecastReply(nullptr),
     cityid(icityid), city(icity), country(icountry),
     isMetric(ismetric), lang(QLocale::system().name()),
-    last(QDateTime::fromMSecsSinceEpoch(0, QTimeZone::utc()))
+    last(QDateTime::fromSecsSinceEpoch(0, QTimeZone::utc())),
+    wnow(Weather({last, "na", "na", "na", 0, 0, 0, 0, 0, 0, 0, 0})),
+    status(NoneDone)
 {
+    forecasts.append(wnow);
+    log << "Weather Client inited.. cityid: " << cityid <<
+           " country: " << country << " city: " << city << endl;
 }
 
 WeatherClient::~WeatherClient() {
@@ -74,9 +81,13 @@ WeatherClient::~WeatherClient() {
     cleanNetworkReply(weatherReply);
 }
 
-void WeatherClient::update(int timeout) {
+void WeatherClient::checkWeather(int timeout) {
     if (checking) {
         emit error(AlreadyChecking);
+        return;
+    }
+    else if (cityid == 0 && city == "") {
+        emit error(NoGeoInfo);
         return;
     }
     last = QDateTime::currentDateTime();
@@ -95,9 +106,9 @@ void WeatherClient::update(int timeout) {
             this, &WeatherClient::parseWeather);
 
     cleanNetworkReply(forecastReply);
-    forecastReply = netRequest("forcast", options);
+    forecastReply = netRequest("forecast", options);
     connect(forecastReply, &QNetworkReply::finished,
-            this, &WeatherClient::parseWeather);
+            this, &WeatherClient::parseForecast);
 
 
     netTimer.start(timeout);
@@ -107,14 +118,19 @@ void WeatherClient::errorHandle(ErrorCode e){
     switch (e) {
     case AlreadyChecking:
         return;
+    case NoGeoInfo:
+        log << "Geo information is not set!" << endl;
+        return;
     case NetWorkTimeOut:
         log << "Network requirement time out!" << endl;
         break;
     case NoValidJson:
         break;
-    case NoJsonList:
-        log << "Forcast parser cannot find \"list\" in json reply" << endl;
+    case JsonNoList:
+        log << "Forecast parser cannot find \"list\" in json reply" << endl;
         break;
+    case JsonBadWeather:
+        log << "Weather parser get bad json reply" << endl;
     }
     checking = false;
     cleanNetworkReply(forecastReply);
@@ -124,7 +140,7 @@ void WeatherClient::errorHandle(ErrorCode e){
 inline OpenWeatherClient::Weather jWeatherParser(const QJsonObject &w) {
     // See https://openweathermap.org/current for more info
     return OpenWeatherClient::Weather(
-    {QDateTime::fromMSecsSinceEpoch(w.value("dt").toInt(), QTimeZone::utc()),       // date
+    {QDateTime::fromSecsSinceEpoch(w.value("dt").toInt(), QTimeZone::utc()),       // datetime
      w.value("weather").toArray().at(0).toObject().value("main").toString(),        // weather
      w.value("weather").toArray().at(0).toObject().value("description").toString(), // description
      w.value("weather").toArray().at(0).toObject().value("icon").toString(),        // icon
@@ -138,7 +154,7 @@ inline OpenWeatherClient::Weather jWeatherParser(const QJsonObject &w) {
      w.value("clouds").toObject().value("all").toInt()});
 }
 void WeatherClient::parseWeather() {
-    QByteArray result = netResult(forecastReply);
+    QByteArray result = netResult(weatherReply);
     QJsonParseError JPE;
     QJsonDocument JD = QJsonDocument::fromJson(result, &JPE);
     if (JPE.error != QJsonParseError::NoError) {
@@ -147,6 +163,12 @@ void WeatherClient::parseWeather() {
         return;
     } else {
         const QJsonObject o = JD.object();
+        if (o.value("cod") == QJsonValue::Undefined ||
+                o.value("cod").toInt() != 200) {
+            // Bad return
+            emit error(JsonBadWeather);
+            return;
+        }
         // TODO: sunrise and sunset?
         if (city == "") {
             city = o.value("name").toString();
@@ -158,10 +180,10 @@ void WeatherClient::parseWeather() {
         log << QString("Parsing weather for %1, %2 (id: %3)\n"
                        ).arg(city).arg(country).arg(cityid) << endl;
         wnow = jWeatherParser(o);
-        log << QString("\tDate: %1\n"
+        log << QString("\tDateTime: %1\n"
                        "\tWeather: %2, %3, icon %4\n"
                        "\tTemperature: %5\n").arg(
-                   wnow.date.toString(LOGTIMEFORMAT)).arg(
+                   wnow.dateTime.toString(LOGTIMEFORMAT)).arg(
                    wnow.weather).arg(wnow.description).arg(
                    wnow.icon).arg(wnow.temp) << endl;
     }
@@ -176,31 +198,38 @@ void WeatherClient::parseForecast() {
     QJsonParseError JPE;
     QJsonDocument JD = QJsonDocument::fromJson(result, &JPE);
     if (JPE.error != QJsonParseError::NoError) {
-        log << "Forcast json Parse Error" << JPE.error << endl;
+        log << "Forecast json Parse Error" << JPE.error << endl;
         emit error(NoValidJson);
         return;
     } else {
-        QJsonValue obj = JD.object().value("list");
+        const QJsonValue obj = JD.object().value("list");
         if (obj == QJsonValue::Undefined) {
-            emit error(NoJsonList);
+            emit error(JsonNoList);
             return;
         }
 
-        log << QString("Parsing forcast for %1, %2 (id: %3)\n"
+        log << QString("Parsing forecast for %1, %2 (id: %3)\n"
                        ).arg(city).arg(country).arg(cityid) << endl;
 
+        if (city == "") {
+            const auto o = JD.object().value("city").toObject();
+            city = o.value("name").toString();
+            country = o.value("country").toString();
+        }
         QJsonArray list = obj.toArray();
         forecasts.clear();
         for (auto item: list) {
             forecasts.append(jWeatherParser(item.toObject()));
-            const auto &o = forecasts.last();
-            log << QString("\tDate: %1\n"
-                           "\tWeather: %2, %3, icon %4\n"
-                           "\tTemperature: %5\n").arg(
-                       o.date.toString(LOGTIMEFORMAT)).arg(
-                       o.weather).arg(o.description).arg(
-                       o.icon).arg(o.temp) << endl;
         }
+        const auto &o = forecasts.first();
+        log << QString("Total %1 forcasts, first being:\n"
+                       "\tDateTime: %2\n"
+                       "\tWeather: %3, %4, icon %5\n"
+                       "\tTemperature: %6").arg(
+                   forecasts.count()).arg(
+                   o.dateTime.toString(LOGTIMEFORMAT)).arg(
+                   o.weather).arg(o.description).arg(
+                   o.icon).arg(o.temp) << endl;
     }
     emit forecastReady();
     status &= ForecastDone;
@@ -267,7 +296,7 @@ void CityLookup::parseCityInfo() {
     } else {
         QJsonValue obj = JD.object().value("list");
         if (obj == QJsonValue::Undefined) {
-            emit error(NoJsonList);
+            emit error(JsonNoList);
             return;
         }
 
@@ -291,14 +320,19 @@ void CityLookup::errorHandle(ErrorCode e){
     switch (e) {
     case AlreadyChecking:
         return;
+    case NoGeoInfo:
+        log << "Shouldn't be here!" << endl;
+        return;
     case NetWorkTimeOut:
         log << "Network requirement time out!" << endl;
         break;
     case NoValidJson:
         break;
-    case NoJsonList:
+    case JsonNoList:
         log << "CityInfo cannot find \"list\" in json reply" << endl;
         break;
+    default:
+        log << "Should not be here" << endl;
     }
     checking = false;
     cleanNetworkReply(netReply);

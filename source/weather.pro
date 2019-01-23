@@ -17,7 +17,6 @@ SOURCES += \
     weatherplugin.cpp \
     weatheritem.cpp \
     weatherclient.cpp \
-    weatherplugin.cpp \
     forecastapplet.cpp
 
 isEmpty(PREFIX) {

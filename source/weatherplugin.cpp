@@ -7,13 +7,15 @@
 
 WeatherPlugin::WeatherPlugin (QObject *parent):
     QObject (parent), m_client(nullptr), m_items(nullptr),
-    m_popups(nullptr), netmgr(this), logFile(logPath()),
-    m_refershTimer(this)
+    m_popups(nullptr), m_tips(nullptr), netmgr(this),
+    logFile(logPath()), m_refershTimer(this)
 {
 
 }
 
 WeatherPlugin::~WeatherPlugin () {
+    log.flush();
+    logFile.close();
     delete m_popups;
     delete m_tips;
     delete m_items;
@@ -25,6 +27,7 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         qDebug() << "Cannot open log file";
     log.setDevice(&logFile);
+    log << "Start!" << endl;
     m_client = new WeatherClient(
                 netmgr, log,
                 m_proxyInter->getValue(this, CITYID_KEY, 0).toInt(),
@@ -34,15 +37,19 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     m_popups = new ForecastApplet(m_client, m_proxyInter->getValue(
                                       this, THEME_KEY, "hty").toString());
     m_items = new WeatherItem(m_client, m_popups);
+    m_tips = new QLabel(tr("Checking... "));
+    connect(m_client, &WeatherClient::weatherReady,
+            this, &WeatherPlugin::refreshTips);
 
     if(!pluginIsDisable()) {
         this->m_proxyInter->itemAdded(this, WEATHER_KEY);
 
-        m_client->update();
+        m_client->checkWeather();
         m_refershTimer.start(MINUTE * m_proxyInter->getValue(
                                  this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
                                  ).toInt());
-        m_refershTimer.callOnTimeout(m_client, &WeatherClient::update);
+        m_refershTimer.callOnTimeout(m_client,
+                                     [=](){m_client->checkWeather();});
     }
 }
 
@@ -55,7 +62,7 @@ void WeatherPlugin::pluginStateSwitched() {
     else {
         m_refershTimer.start();
         m_proxyInter->itemAdded(this, WEATHER_KEY);
-        m_client->update();
+        m_client->checkWeather();
     }
 }
 
@@ -93,8 +100,12 @@ void WeatherPlugin::setSortKey(const QString &itemKey, const int order) {
 
 void WeatherPlugin::refreshIcon(const QString &itemKey) {
     if (itemKey == WEATHER_KEY) {
-        m_items->refresh();
+        m_items->refreshIcon();
     }
+}
+
+void WeatherPlugin::refreshTips() {
+    m_tips->setText(m_client->tipNow());
 }
 
 const QString WeatherPlugin::itemContextMenu(const QString &itemKey) {
@@ -146,7 +157,7 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
             // TODO
         }
         else if (menuId == REFRESH) {
-            m_client->update();
+            m_client->checkWeather();
         }
         else if (menuId == SHOWLOG) {
             QString surl = "file://" + logPath();

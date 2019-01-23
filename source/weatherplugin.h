@@ -1,5 +1,5 @@
-#ifndef WEATHERPlugin_H
-#define WEATHERPlugin_H
+#ifndef WEATHERPLUGIN_H
+#define WEATHERPLUGIN_H
 
 #include "dde-dock/pluginsiteminterface.h"
 #include "weatheritem.h"
@@ -44,7 +44,7 @@ public:
     static QString logPath() {
         return QStandardPaths::standardLocations(
                     QStandardPaths::CacheLocation).first()
-                + "/dock_plugin_weather.log";}
+                + "/dde-dock-plugin-weather.log";}
 
     const QString pluginName() const override {return "Weather";}
     const QString pluginDisplayName() const override {return tr("Weather");}
@@ -87,4 +87,4 @@ private:
     static const QStringList themeSet;
 };
 
-#endif // WEATHERPlugin_H
+#endif // WEATHERPLUGIN_H

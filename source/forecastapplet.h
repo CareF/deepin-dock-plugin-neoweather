@@ -21,6 +21,7 @@ public:
     void setTheme(const QString& theme) {
         themeName = theme; reloadForecast();}
     const QString& theme() const {return themeName;}
+    QPixmap loadWIcon(const QString &name="na", int size=50) const;
 
 public slots:
     void reloadForecast();
@@ -34,8 +35,6 @@ private:
         QPointer<QLabel> Date, WImg, Temp;
     } fcstLabels[MAXDAYS];
     QGridLayout defaultLayout;
-
-    inline QPixmap loadWIcon(const QString &name="na", int size=50);
 
 };
 

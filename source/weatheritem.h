@@ -18,17 +18,17 @@ protected:
     QSize sizeHint() const;
     void resizeEvent(QResizeEvent *e){
         QWidget::resizeEvent(e);
-        refresh();
+        refreshIcon();
     }
     void paintEvent(QPaintEvent *e);
 
 public slots:
-    void refresh();
+    void refreshIcon();
 
 private:
     const WeatherClient *client;
     const ForecastApplet *fcstApplet;
-    QPixmap weather;
+    QPixmap m_iconPixmap;
 };
 
 #endif // WEATHERWIDGET_H

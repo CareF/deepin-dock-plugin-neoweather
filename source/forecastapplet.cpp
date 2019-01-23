@@ -49,17 +49,18 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
 }
 
 ForecastApplet::~ForecastApplet() {
-    delete WImgNow;
-    delete tempNow;
-    delete cityNow;
-    for (auto & f : fcstLabels) {
-        delete f.WImg;
-        delete f.Temp;
-        delete f.Date;
-    }
+    // Not necessary becasue they go with defaultLayout
+//    delete WImgNow;
+//    delete tempNow;
+//    delete cityNow;
+//    for (auto & f : fcstLabels) {
+//        delete f.WImg;
+//        delete f.Temp;
+//        delete f.Date;
+//    }
 }
 
-inline QPixmap ForecastApplet::loadWIcon(const QString &name, int size) {
+QPixmap ForecastApplet::loadWIcon(const QString &name, int size) const {
     // TODO: cache icon pixmap
     const auto ratio = qApp->devicePixelRatio();
     const int iconSize = static_cast<int> (size * ratio);
@@ -75,19 +76,22 @@ inline QPixmap ForecastApplet::loadWIcon(const QString &name, int size) {
 void ForecastApplet::reloadForecast() {
     auto forcasts = client->getForecast();
     WImgNow->setPixmap(loadWIcon(forcasts[0].icon, 80));
-    tempNow->setText(forcasts[0].description);
+    tempNow->setText(QString::number(forcasts[0].temp, 'f', 1)+
+                     client->tempUnit());
     cityNow->setText(client->cityName());
 
     int n = 0;
     for (auto iter = forcasts.begin() + 1;
          iter != forcasts.end() && n < MAXDAYS;
          iter++) {
-        if (iter->date.time() == QTime(12, 0, 0)) {
+        if (iter->dateTime.time() == QTime(12, 0, 0)) {
             // TODO: Do a post processing for daily statistics
-            fcstLabels[n].Date->setText(iter->date.toString(DATEFORMAT));
+            fcstLabels[n].Date->setText(iter->dateTime.toString(DATEFORMAT));
             fcstLabels[n].WImg->setPixmap(loadWIcon(iter->icon));
-            fcstLabels[n].Temp->setText(QString::number(iter->temp, 'g', 1)+
-                                        client->tempUnit());
+            fcstLabels[n].Temp->setText(
+                        QString("%1, %2%3").arg(iter->weather).arg(
+                            QString::number(qRound(iter->temp))).arg(
+                            client->tempUnit()));
             n++;
         }
     }
