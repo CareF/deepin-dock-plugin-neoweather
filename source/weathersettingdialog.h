@@ -6,6 +6,16 @@
 #include "dde-dock/pluginsiteminterface.h"
 #include "weatherclient.h"
 
+// keys for settings from .config/deepin/dde-dock.conf,
+// set and get through m_proxyInter
+#define THEME_KEY "theme"
+#define CITYID_KEY "cityid"
+#define CITY_KEY "city"
+#define COUNTRY_KEY "country"
+#define UNIT_KEY "isMetric"
+#define CHK_INTERVAL_KEY "chk_intvl"
+#define APPID_KEY "appid"
+
 class WeatherSettingDialog : public DTK_WIDGET_NAMESPACE::DAbstractDialog
 {
     Q_OBJECT

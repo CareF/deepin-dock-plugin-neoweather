@@ -34,25 +34,46 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
                 m_proxyInter->getValue(this, CITY_KEY, "").toString(),
                 m_proxyInter->getValue(this, COUNTRY_KEY, "").toString(),
                 m_proxyInter->getValue(this, UNIT_KEY, true).toBool());
-    m_popups = new ForecastApplet(m_client, m_proxyInter->getValue(
-                                      this, THEME_KEY, "hty").toString());
+    OpenWeatherClient::setAppid(m_proxyInter->getValue(
+                                    this, APPID_KEY, DEFAULTAPPID).toString());
+    m_popups = new ForecastApplet(m_client, m_proxyInter->getValue(this, THEME_KEY,
+                                      WeatherSettingDialog::themeSet[0]).toString());
     m_items = new WeatherItem(m_client, m_popups);
     m_tips = new QLabel(tr("Checking... "));
+    m_refershTimer.setInterval(MINUTE * m_proxyInter->getValue(
+                                   this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
+                                   ).toInt());
     connect(m_client, &WeatherClient::weatherReady,
             this, &WeatherPlugin::refreshTips);
-    connect(m_client, &WeatherClient::error,
-            [this](){this->m_refershTimer.start(MINUTE/2);}); // If Error, try every 30s
+    // TODO: how to handle error result?
+//    connect(m_client, &WeatherClient::error,
+//            [this](){this->m_refershTimer.start(MINUTE/2);}); // If Error, try every 30s
+    connect(this, &WeatherPlugin::checkUpdate,
+            &m_refershTimer, QOverload<>::of(&QTimer::start)); // restart timer
+    connect(this, &WeatherPlugin::checkUpdate,
+            m_client, &WeatherClient::checkWeather);
 
     if(!pluginIsDisable()) {
         this->m_proxyInter->itemAdded(this, WEATHER_KEY);
-
-        m_client->checkWeather();
-        m_refershTimer.start(MINUTE * m_proxyInter->getValue(
-                                 this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
-                                 ).toInt());
         m_refershTimer.callOnTimeout(m_client,
                                      [=](){m_client->checkWeather();});
+        emit checkUpdate();
     }
+}
+
+void WeatherPlugin::reloadSettings() {
+    m_popups->setTheme(m_proxyInter->getValue(this, THEME_KEY,
+                           WeatherSettingDialog::themeSet[0]).toString());
+    m_client->setCity(m_proxyInter->getValue(this, CITYID_KEY, 0).toInt());
+    m_client->setCity(m_proxyInter->getValue(this, CITY_KEY, "").toString(),
+                      m_proxyInter->getValue(this, COUNTRY_KEY, "").toString());
+    m_client->setMetric(m_proxyInter->getValue(this, UNIT_KEY, true).toBool());
+    m_client->setAppid(m_proxyInter->getValue(this, APPID_KEY, DEFAULTAPPID
+                                              ).toString());
+    m_refershTimer.setInterval(MINUTE * m_proxyInter->getValue(
+                                   this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
+                                   ).toInt());
+    emit checkUpdate();
 }
 
 void WeatherPlugin::pluginStateSwitched() {
@@ -159,7 +180,7 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
             // TODO
         }
         else if (menuId == REFRESH) {
-            m_client->checkWeather();
+            emit checkUpdate();
         }
         else if (menuId == SHOWLOG) {
             QString surl = "file://" + logPath();

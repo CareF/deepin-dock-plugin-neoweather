@@ -5,6 +5,7 @@
 #include "weatheritem.h"
 #include "forecastapplet.h"
 #include "weatherclient.h"
+#include "weathersettingdialog.h" //Also defined setting keys
 #include <QDateTime>
 #include <QFile>
 #include <QStandardPaths>
@@ -22,14 +23,6 @@
 #define SETTINGS "set"
 #define ABOUT "about"
 #define SHOWLOG "log"
-// keys for settings from .config/deepin/dde-dock.conf,
-// set and get through m_proxyInter
-#define THEME_KEY "theme"
-#define CITY_KEY "city"
-#define COUNTRY_KEY "country"
-#define CITYID_KEY "cityid"
-#define UNIT_KEY "isMetric"
-#define CHK_INTERVAL_KEY "chk_intvl"
 
 class WeatherPlugin : public QObject, PluginsItemInterface {
     Q_OBJECT
@@ -69,7 +62,14 @@ public:
                          const bool checked) override;
 
 signals:
+    ///
+    /// \brief checkUpdate: manually check updates
+    /// This will also reset the timer
+    ///
     void checkUpdate();
+
+public slots:
+    void reloadSettings();
 
 private slots:
     void refreshTips();

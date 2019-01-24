@@ -7,7 +7,7 @@
 
 /* OpenWeatherClient members */
 
-QString OpenWeatherClient::appid = "8c3a954fdf4092d93ecf8e7039dbb6ea";
+QString OpenWeatherClient::appid = DEFAULTAPPID;
 OpenWeatherClient::OpenWeatherClient(QNetworkAccessManager &net,
                                      QTextStream &logStream,
                                      QObject *parent):

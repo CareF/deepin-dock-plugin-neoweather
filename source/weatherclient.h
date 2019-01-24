@@ -11,6 +11,8 @@
 #include <QTimer>
 #include <QFlags>
 
+#define DEFAULTAPPID "8c3a954fdf4092d93ecf8e7039dbb6ea"
+
 /**
  * \brief An abstract Qt interface for openweathermap.org API
  *
@@ -38,6 +40,7 @@ public:
     //                + "/dock_plugin_weather.log";}
 
     bool ischecking() const {return checking;}
+    static void setAppid(const QString &key) {appid = key;}
 
     struct CityInfo {
         int id; QString name; QString country;
@@ -152,11 +155,10 @@ public:
     void setMetric(bool is);
     /** set city and update cached weather */
     void setCity(const QString &icity, const QString &icountry) {
-        cityid = 0; city = icity; country = icountry; checkWeather();}
-    void setCity(int id) {cityid = id; checkWeather();}
+        cityid = 0; city = icity; country = icountry; }
+    void setCity(int id) {cityid = id; }
     void setCity(const CityInfo &info) {
-        cityid = info.id; city = info.name; country = info.country;
-        checkWeather();}
+        cityid = info.id; city = info.name; country = info.country; }
 
 signals:
     /** Asynchronous signal after calling checkWeather(), with weatherNow ready */
