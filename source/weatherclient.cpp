@@ -177,12 +177,12 @@ void WeatherClient::parseWeather() {
         if (cityid == 0)
             cityid = o.value("id").toInt();
 
-        log << QString("Parsing weather for %1, %2 (id: %3)\n"
+        log << QString("Parsing weather for %1, %2 (id: %3)"
                        ).arg(city).arg(country).arg(cityid) << endl;
         wnow = jWeatherParser(o);
         log << QString("\tDateTime: %1\n"
                        "\tWeather: %2, %3, icon %4\n"
-                       "\tTemperature: %5\n").arg(
+                       "\tTemperature: %5").arg(
                    wnow.dateTime.toString(LOGTIMEFORMAT)).arg(
                    wnow.weather).arg(wnow.description).arg(
                    wnow.icon).arg(wnow.temp) << endl;
@@ -208,7 +208,7 @@ void WeatherClient::parseForecast() {
             return;
         }
 
-        log << QString("Parsing forecast for %1, %2 (id: %3)\n"
+        log << QString("Parsing forecast for %1, %2 (id: %3)"
                        ).arg(city).arg(country).arg(cityid) << endl;
 
         if (city == "") {
