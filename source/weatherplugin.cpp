@@ -40,6 +40,8 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     m_tips = new QLabel(tr("Checking... "));
     connect(m_client, &WeatherClient::weatherReady,
             this, &WeatherPlugin::refreshTips);
+    connect(m_client, &WeatherClient::error,
+            [this](){this->m_refershTimer.start(MINUTE/2);}); // If Error, try every 30s
 
     if(!pluginIsDisable()) {
         this->m_proxyInter->itemAdded(this, WEATHER_KEY);

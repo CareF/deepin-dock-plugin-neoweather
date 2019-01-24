@@ -11,13 +11,15 @@ HEADERS += \
     weatherplugin.h \
     weatheritem.h \
     weatherclient.h \
-    forecastapplet.h
+    forecastapplet.h \
+    weathersettingdialog.h
 
 SOURCES += \
     weatherplugin.cpp \
     weatheritem.cpp \
     weatherclient.cpp \
-    forecastapplet.cpp
+    forecastapplet.cpp \
+    weathersettingdialog.cpp
 
 isEmpty(PREFIX) {
     PREFIX = /usr
