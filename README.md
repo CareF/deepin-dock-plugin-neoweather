@@ -7,7 +7,7 @@ For now there's no binary release provided. You can compile it either using Qt C
 ```
 mkdir build
 cd build
-qmake ../
+qmake ../source
 make
 ```
 
