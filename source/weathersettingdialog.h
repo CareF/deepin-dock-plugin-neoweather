@@ -13,16 +13,6 @@
 
 const QStringList themeSet({"hty", "gray"});
 
-class LimitedHightComboBox: public QComboBox {
-    Q_OBJECT
-public:
-    LimitedHightComboBox(int h, QWidget *parent=nullptr);
-    virtual void showPopup () override;
-
-private:
-    int height;
-};
-
 class WeatherSettingDialog : public DTK_WIDGET_NAMESPACE::DAbstractDialog
 {
     Q_OBJECT
@@ -37,9 +27,7 @@ public:
 public slots:
     virtual void accept() override; // Also delete self lateron
 
-signals:
-
-protected:
+private:
     ///
     /// \brief m_proxyInter
     /// To get and save setting options.
@@ -58,6 +46,36 @@ protected:
     QPointer<QLineEdit> appidBox;
 
     void loadSettings();
+
+private slots:
+    void newAppidInput(const QString &input);
+};
+
+
+/**
+ * @brief The LimitedHightComboBox class
+ * This class implement a QComboBox with limited height
+ * under popup mode
+ */
+class LimitedHightComboBox: public QComboBox {
+    Q_OBJECT
+public:
+    LimitedHightComboBox(int h, QWidget *parent=nullptr);
+    virtual void showPopup () override;
+
+private:
+    int height;
+};
+
+class AppidBox : public QLineEdit
+{
+    Q_OBJECT
+public:
+    AppidBox(QWidget *parent = nullptr): QLineEdit(parent) {}
+
+    /** This filter watches QEvent::Enter,
+     * and triggers QEvent:ToolTip if this->text()=="" */
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
 };
 
 #endif // WEATHERSETTINGDIALOG_H

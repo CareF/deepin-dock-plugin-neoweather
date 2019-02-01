@@ -19,3 +19,5 @@ sudo make install
 
 ### Acknowledgment ###
 This Plugin was initially inspired by [sonichy's weather plugin](https://github.com/sonichy/WEATHER_DDE_DOCK). 
+
+Some icons are from [zondicons](http://www.zondicons.com/)

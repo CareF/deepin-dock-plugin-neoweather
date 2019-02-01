@@ -41,4 +41,7 @@
         <file alias="13n">icon/gray/13n.png</file>
         <file alias="50n">icon/gray/50n.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file alias="question">icon/question.svg</file>
+    </qresource>
 </RCC>

@@ -11,6 +11,12 @@
 /* OpenWeatherClient members */
 
 QString OpenWeatherClient::appid = DEFAULTAPPID;
+void OpenWeatherClient::setAppid(const QString &key) {
+    if (key != "")
+        appid = key;
+    else
+        appid = DEFAULTAPPID;
+}
 OpenWeatherClient::OpenWeatherClient(QNetworkAccessManager &net,
                                      QTextStream &logStream,
                                      QObject *parent):
@@ -42,7 +48,7 @@ inline void cleanNetworkReply(QPointer<QNetworkReply> reply) {
         reply->deleteLater();
     }
 }
-#define LOGMAX 512
+#define LOGMAX 144
 QByteArray OpenWeatherClient::netResult(QPointer<QNetworkReply> reply) {
     netTimer.stop();
     QByteArray result = reply->readAll();

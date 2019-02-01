@@ -8,11 +8,10 @@
 #include <QProxyStyle>
 #include <QListView>
 #include <QObject>
-#include <QPushButton>
+#include <QToolButton>
+#include <QEnterEvent>
 #include <QDesktopServices>
 #include "countrycode.h"
-
-DWIDGET_USE_NAMESPACE
 
 /*
 class NonPopupComboboxStyle : public QProxyStyle
@@ -60,6 +59,17 @@ void LimitedHightComboBox::showPopup() {
     popup->move(popup->x(), popup->y() + above.y() - top);
 }
 
+bool AppidBox::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::Enter && this->text() == "") {
+        qApp->postEvent(watched, new QHelpEvent(QEvent::ToolTip,
+                            static_cast<QEnterEvent*>(event)->pos(),
+                            static_cast<QEnterEvent*>(event)->globalPos()));
+    }
+    return false;
+}
+
+DWIDGET_USE_NAMESPACE
+
 #define OPTIONS_WIDTH 100
 WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
                                            WeatherPlugin *weatherplugin,
@@ -71,7 +81,7 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     m_cityLookupClient(new CityLookup(net, logStream, this)),
     cityBox(new QComboBox(this)), countryBox(new LimitedHightComboBox(500, this)),
     themeBox(new QComboBox(this)), timeIntvBox(new QLineEdit(this)),
-    appidBox(new QLineEdit(this))
+    appidBox(new AppidBox(this))
 {
     QVBoxLayout *vLayout = new QVBoxLayout();
 
@@ -107,6 +117,8 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     // TODO: help icon
     vLayout->addWidget(geoGroup);
 
+    QString appid = m_proxyInter->getValue(m_weatherPlugin, APPID_KEY, "").toString();
+
     QGroupBox *optionGroup = new QGroupBox(tr("Options"));
     QGridLayout *settingLayout = new QGridLayout();
     settingLayout->addWidget(new QLabel(tr("Intervel")),
@@ -116,6 +128,10 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
                               DEFAULT_INTERVAL).toInt()));
     timeIntvBox->setInputMask(tr("999 mi\\n"));
     timeIntvBox->setMaximumWidth(OPTIONS_WIDTH);
+    timeIntvBox->setEnabled(appid != "");
+    timeIntvBox->setToolTip(tr("Due to the limitations of openweathermap.org for free account, "
+                               "you have to use your own appid to set shorter time interval."));
+    timeIntvBox->installEventFilter(appidBox);
     settingLayout->addWidget(timeIntvBox, 0, 1);
     settingLayout->addWidget(new QLabel(tr("Units")), 1, 0);
     QHBoxLayout *unitButtons = new QHBoxLayout();
@@ -139,18 +155,22 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     settingLayout->addWidget(themeBox, 2, 1);
 
     appidBox->setPlaceholderText(tr("appid from openweathermap.org"));
-    QString appid = m_proxyInter->getValue(m_weatherPlugin, APPID_KEY, "").toString();
     if (appid != "") {
         appidBox->setText(appid);
     }
+    connect(appidBox, &QLineEdit::textEdited,
+            this, &WeatherSettingDialog::newAppidInput);
     settingLayout->addWidget(new QLabel(tr("AppID")), 3, 0);
     settingLayout->addWidget(appidBox, 3, 1);
-    QPushButton* appidHelp = new QPushButton("?");
-    appidHelp->setMaximumWidth(appidHelp->fontMetrics().size(
-                                   Qt::TextShowMnemonic, " ? ").width());
+//    QPushButton* appidHelp = new QPushButton("?");
+//    appidHelp->setMaximumWidth(appidHelp->fontMetrics().size(
+//                                   Qt::TextShowMnemonic, " ? ").width());
+    QToolButton* appidHelp = new QToolButton(this);
+    appidHelp->setIcon(QIcon(":/question"));
     appidHelp->setToolTip(tr("The plugin default appid is proviede by the author. "
                              "Click to learn how to get your own appid."));
-    connect(appidHelp, &QPushButton::released, [=](){
+    appidHelp->installEventFilter(appidBox);
+    connect(appidHelp, &QToolButton::released, [=](){
         QDesktopServices::openUrl(QUrl("https://openweathermap.org/appid"));});
     settingLayout->addWidget(appidHelp, 3, 2);
     optionGroup->setLayout(settingLayout);
@@ -193,4 +213,10 @@ void WeatherSettingDialog::accept() {
     m_proxyInter->saveValue(m_weatherPlugin, CHK_INTERVAL_KEY,
                             timeIntvBox->text().chopped(4).toInt());
     QDialog::accept();
+}
+
+void WeatherSettingDialog::newAppidInput(const QString &input) {
+    timeIntvBox->setEnabled(input != "");
+    // Make it effective immediately for event filter to start
+    appidBox->setText(input);
 }

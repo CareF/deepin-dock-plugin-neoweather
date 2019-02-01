@@ -66,8 +66,7 @@ void WeatherPlugin::reloadSettings() {
                            themeSet[0]).toString());
     m_client->setMetric(m_proxyInter->getValue(this, UNIT_KEY, true).toBool());
     QString appid = m_proxyInter->getValue(this, APPID_KEY, "").toString();
-    if (appid != "")
-        m_client->setAppid(appid);
+    m_client->setAppid(appid);
     m_refershTimer.setInterval(MINUTE * m_proxyInter->getValue(
                                    this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
                                    ).toInt());

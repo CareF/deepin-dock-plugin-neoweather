@@ -38,7 +38,9 @@ public:
     //                + "/dock_plugin_weather.log";}
 
     bool ischecking() const {return checking;}
-    static void setAppid(const QString &key) {appid = key;}
+
+    /** Set appid (globally). Empty string to reset. */
+    static void setAppid(const QString &key);
 
     struct CityInfo {
         int id; QString name; QString country;
