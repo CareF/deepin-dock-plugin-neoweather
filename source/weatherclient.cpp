@@ -17,8 +17,9 @@ OpenWeatherClient::OpenWeatherClient(QNetworkAccessManager &net,
     QObject (parent), log(logStream), checking(false), netmgr(net)
 {
         netTimer.setSingleShot(true);
-        netTimer.callOnTimeout([this](){
-            this->errorHandle(NetWorkTimeOut);});
+        connect(&netTimer, &QTimer::timeout, [this](){
+            this->errorHandle(NetWorkTimeOut);
+        });
         connect(this, SIGNAL(error(ErrorCode)),
                 this, SLOT(errorHandle(ErrorCode)));
 }

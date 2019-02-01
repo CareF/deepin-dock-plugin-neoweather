@@ -55,8 +55,8 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
 
     if(!pluginIsDisable()) {
         this->m_proxyInter->itemAdded(this, WEATHER_KEY);
-        m_refershTimer.callOnTimeout(m_client,
-                                     [=](){m_client->checkWeather();});
+        connect(&m_refershTimer, &QTimer::timeout,
+                m_client, QOverload<>::of(&WeatherClient::checkWeather));
         emit checkUpdate();
     }
 }
