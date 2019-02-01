@@ -5,7 +5,6 @@
 #include "weatheritem.h"
 #include "forecastapplet.h"
 #include "weatherclient.h"
-#include "weathersettingdialog.h" //Also defined setting keys
 #include <QDateTime>
 #include <QFile>
 #include <QStandardPaths>
@@ -14,8 +13,21 @@
 #include <QLabel>
 
 // itemKey for the plugin
-#define WEATHER_KEY "weather-key"
+#define WEATHER_KEY "neoweather-key"
 #define STATE_KEY "enable"
+
+// keys for settings from .config/deepin/dde-dock.conf,
+// set and get through m_proxyInter
+#define THEME_KEY "theme"
+#define CITYID_KEY "cityid"
+#define CITY_KEY "city"
+#define COUNTRY_KEY "country"
+#define UNIT_KEY "isMetric"
+#define CHK_INTERVAL_KEY "chk_intvl"
+#define APPID_KEY "appid"
+
+#define MINUTE 60000 // minute in ms
+#define DEFAULT_INTERVAL 30 //min
 
 #define VERSION "v1.0"
 // itemID or menuID for Context Menu.. Why can't I use enum and switch..
@@ -24,11 +36,13 @@
 #define ABOUT "about"
 #define SHOWLOG "log"
 
+class WeatherSettingDialog;
+
 class WeatherPlugin : public QObject, PluginsItemInterface {
     Q_OBJECT
     Q_INTERFACES(PluginsItemInterface)
     Q_PLUGIN_METADATA(IID "com.deepin.dock.PluginsItemInterface"
-                      FILE "weather.json")
+                      FILE "neoweather.json")
 
 public:
     explicit WeatherPlugin(QObject *parent = nullptr);
@@ -39,8 +53,8 @@ public:
                     QStandardPaths::CacheLocation).first()
                 + "/dde-dock-plugin-weather.log";}
 
-    const QString pluginName() const override {return "Weather";}
-    const QString pluginDisplayName() const override {return tr("Weather");}
+    const QString pluginName() const override {return "NeoWeather";}
+    const QString pluginDisplayName() const override {return tr("NeoWeather");}
     void init(PluginProxyInterface *proxyInter) override;
 
     void pluginStateSwitched() override;
@@ -60,6 +74,8 @@ public:
     const QString itemContextMenu(const QString &itemKey) override;
     void invokedMenuItem(const QString &itemKey, const QString &menuId,
                          const bool checked) override;
+
+    friend WeatherSettingDialog;
 
 signals:
     ///
@@ -83,8 +99,6 @@ private:
     QFile logFile;
     QTextStream log;
     QTimer m_refershTimer;
-
-    static const QStringList themeSet;
 };
 
 #endif // WEATHERPLUGIN_H

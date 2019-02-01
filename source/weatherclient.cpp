@@ -5,6 +5,9 @@
 #include <QTimeZone>
 #define LOGTIMEFORMAT "yyyy/MM/dd HH:mm:ss"
 
+#define DEFAULTAPPID "8c3a954fdf4092d93ecf8e7039dbb6ea"
+
+
 /* OpenWeatherClient members */
 
 QString OpenWeatherClient::appid = DEFAULTAPPID;
@@ -56,6 +59,12 @@ QByteArray OpenWeatherClient::netResult(QPointer<QNetworkReply> reply) {
 
 
 /* WeatherClient members */
+const QMap<QString, QString> WeatherClient::WeatherDict(
+{
+            {"NA", tr("NA")},
+            {"Clear", tr("Clear")},
+            {"Rain", tr("Rain")},
+        });
 
 WeatherClient::WeatherClient(QNetworkAccessManager &net,
                              QTextStream &logStream,

@@ -2,31 +2,37 @@
 #define WEATHERSETTINGDIALOG_H
 
 #include <QWidget>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QRadioButton>
 #include "dabstractdialog.h"
 #include "dde-dock/pluginsiteminterface.h"
 #include "weatherclient.h"
+#include "weatherplugin.h"
 
-// keys for settings from .config/deepin/dde-dock.conf,
-// set and get through m_proxyInter
-#define THEME_KEY "theme"
-#define CITYID_KEY "cityid"
-#define CITY_KEY "city"
-#define COUNTRY_KEY "country"
-#define UNIT_KEY "isMetric"
-#define CHK_INTERVAL_KEY "chk_intvl"
-#define APPID_KEY "appid"
+const QStringList themeSet({"hty", "gray"});
+
+class LimitedHightComboBox: public QComboBox {
+    Q_OBJECT
+public:
+    LimitedHightComboBox(int h, QWidget *parent=nullptr);
+    virtual void showPopup () override;
+
+private:
+    int height;
+};
 
 class WeatherSettingDialog : public DTK_WIDGET_NAMESPACE::DAbstractDialog
 {
     Q_OBJECT
 public:
     explicit WeatherSettingDialog(PluginProxyInterface *proxyInter,
+                                  WeatherPlugin *weatherplugin,
                                   QNetworkAccessManager &net,
                                   QTextStream &logStream,
                                   QWidget *parent = nullptr);
-    virtual ~WeatherSettingDialog() override;
-
-    const static QStringList themeSet;
+//    virtual ~WeatherSettingDialog() override;
 
 public slots:
     virtual void accept() override; // Also delete self lateron
@@ -40,8 +46,16 @@ protected:
     /// the WeatherPlugin class is responsible to reload setting
     /// when accepted SIGNAL is sent
     ///
-    QPointer<PluginProxyInterface> m_proxyInter;
+    PluginProxyInterface *m_proxyInter;
+    WeatherPlugin *m_weatherPlugin;
     QPointer<CityLookup> m_cityLookupClient;
+    QPointer<QComboBox> cityBox;
+    QPointer<QComboBox> countryBox;
+    QPointer<QComboBox> themeBox;
+    QPointer<QLineEdit> timeIntvBox;
+    QPointer<QRadioButton> metricButton;
+    QPointer<QRadioButton> imperialButton;
+    QPointer<QLineEdit> appidBox;
 
     void loadSettings();
 };

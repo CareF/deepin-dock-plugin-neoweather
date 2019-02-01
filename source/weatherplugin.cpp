@@ -1,9 +1,7 @@
 #include "weatherplugin.h"
 #include <QDesktopServices>
 #include <DAboutDialog>
-
-#define MINUTE 60000 // minute in ms
-#define DEFAULT_INTERVAL 30 //min
+#include "weathersettingdialog.h"
 
 WeatherPlugin::WeatherPlugin (QObject *parent):
     QObject (parent), m_client(nullptr), m_items(nullptr),
@@ -34,10 +32,12 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
                 m_proxyInter->getValue(this, CITY_KEY, "").toString(),
                 m_proxyInter->getValue(this, COUNTRY_KEY, "").toString(),
                 m_proxyInter->getValue(this, UNIT_KEY, true).toBool());
-    OpenWeatherClient::setAppid(m_proxyInter->getValue(
-                                    this, APPID_KEY, DEFAULTAPPID).toString());
+    QString appid =  m_proxyInter->getValue(this, APPID_KEY, "").toString();
+    if (appid != "") {
+        OpenWeatherClient::setAppid(appid);
+    }
     m_popups = new ForecastApplet(m_client, m_proxyInter->getValue(this, THEME_KEY,
-                                      WeatherSettingDialog::themeSet[0]).toString());
+                                      themeSet[0]).toString());
     m_items = new WeatherItem(m_client, m_popups);
     m_tips = new QLabel(tr("Checking... "));
     m_refershTimer.setInterval(MINUTE * m_proxyInter->getValue(
@@ -51,7 +51,7 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     connect(this, &WeatherPlugin::checkUpdate,
             &m_refershTimer, QOverload<>::of(&QTimer::start)); // restart timer
     connect(this, &WeatherPlugin::checkUpdate,
-            m_client, &WeatherClient::checkWeather);
+            m_client, QOverload<>::of(&WeatherClient::checkWeather));
 
     if(!pluginIsDisable()) {
         this->m_proxyInter->itemAdded(this, WEATHER_KEY);
@@ -63,17 +63,23 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
 
 void WeatherPlugin::reloadSettings() {
     m_popups->setTheme(m_proxyInter->getValue(this, THEME_KEY,
-                           WeatherSettingDialog::themeSet[0]).toString());
-    m_client->setCity(m_proxyInter->getValue(this, CITYID_KEY, 0).toInt());
-    m_client->setCity(m_proxyInter->getValue(this, CITY_KEY, "").toString(),
-                      m_proxyInter->getValue(this, COUNTRY_KEY, "").toString());
+                           themeSet[0]).toString());
     m_client->setMetric(m_proxyInter->getValue(this, UNIT_KEY, true).toBool());
-    m_client->setAppid(m_proxyInter->getValue(this, APPID_KEY, DEFAULTAPPID
-                                              ).toString());
+    QString appid = m_proxyInter->getValue(this, APPID_KEY, "").toString();
+    if (appid != "")
+        m_client->setAppid(appid);
     m_refershTimer.setInterval(MINUTE * m_proxyInter->getValue(
                                    this, CHK_INTERVAL_KEY, DEFAULT_INTERVAL
                                    ).toInt());
-    emit checkUpdate();
+    QString city = m_proxyInter->getValue(this, CITY_KEY, "").toString();
+    QString country = m_proxyInter->getValue(this, COUNTRY_KEY, "").toString();
+    int cityid = m_proxyInter->getValue(this, CITYID_KEY, 0).toInt();
+    if (city != m_client->cityName() || country != m_client->countryName()
+            || cityid != m_client->cityID()) {
+        m_client->setCity(city, country);
+        m_client->setCity(cityid);
+        emit checkUpdate();
+    }
 }
 
 void WeatherPlugin::pluginStateSwitched() {
@@ -177,7 +183,12 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
     Q_UNUSED(checked)
     if (itemKey == WEATHER_KEY) {
         if (menuId == SETTINGS) {
-            // TODO
+            WeatherSettingDialog* setDialog = new WeatherSettingDialog(
+                        m_proxyInter, this, netmgr, log);
+            setDialog->setAttribute(Qt::WA_DeleteOnClose);
+            connect(setDialog, &WeatherSettingDialog::accepted,
+                    this, &WeatherPlugin::reloadSettings);
+            setDialog->show();
         }
         else if (menuId == REFRESH) {
             emit checkUpdate();
@@ -206,5 +217,3 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
     }
 
 }
-
-const QStringList WeatherPlugin::themeSet({"hty", "gray"});

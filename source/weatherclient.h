@@ -11,8 +11,6 @@
 #include <QTimer>
 #include <QFlags>
 
-#define DEFAULTAPPID "8c3a954fdf4092d93ecf8e7039dbb6ea"
-
 /**
  * \brief An abstract Qt interface for openweathermap.org API
  *
@@ -130,11 +128,16 @@ public:
                            QObject *parent = nullptr);
     virtual ~WeatherClient() override;
 
+    static const QMap<QString, QString> WeatherDict;
+
     int cityID() const {return cityid;}
     const QString &cityName() const {return city;}
     const QString &countryName() const {return country;}
     const QDateTime &lastUpdate() const {return last;}
-    const QString &weatherNowText() const {return wnow.weather;}
+    const QString weatherNowText() const {
+        if (WeatherDict.contains(wnow.weather))
+            return WeatherDict[wnow.weather];
+        return wnow.weather;}
     const QString &weatherNowDesc() const {return wnow.description;}
     const QString &weatherNowIcon() const {return wnow.icon;}
     inline QString tempUnit() const {return isMetric? "°C" : "°F";}
@@ -171,7 +174,8 @@ signals:
 public slots:
     /** Start a request for update forecast information,
      * and according to #cityid, update #city and #country. */
-    void checkWeather(int timeout = 60000);  //1min for timeout
+    void checkWeather(int timeout);
+    void checkWeather() {return checkWeather(60000);}  //Overload 1min for timeout
 
 private slots:
     void parseWeather();

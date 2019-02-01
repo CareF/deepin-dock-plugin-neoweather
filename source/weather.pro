@@ -3,23 +3,26 @@ TEMPLATE         = lib
 CONFIG          += plugin c++11 link_pkgconfig
 PKGCONFIG       += dtkwidget
 
-TARGET           = $$qtLibraryTarget(weather)
+TARGET           = $$qtLibraryTarget(neoweather)
 DESTDIR          = $$_PRO_FILE_PWD_
-DISTFILES       += weather.json
+DISTFILES       += \
+    neoweather.json
 
 HEADERS += \
     weatherplugin.h \
     weatheritem.h \
     weatherclient.h \
     forecastapplet.h \
-    weathersettingdialog.h
+    weathersettingdialog.h \
+    countrycode.h
 
 SOURCES += \
     weatherplugin.cpp \
     weatheritem.cpp \
     weatherclient.cpp \
     forecastapplet.cpp \
-    weathersettingdialog.cpp
+    weathersettingdialog.cpp \
+    countrycode.cpp
 
 isEmpty(PREFIX) {
     PREFIX = /usr
