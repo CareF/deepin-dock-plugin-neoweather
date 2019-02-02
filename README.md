@@ -17,6 +17,13 @@ And than install
 sudo make install
 ```
 
+### TODO list ###
+
+- [ ] Add i18n support
+- [ ] Icons with night
+- [ ] Cityid look up
+- [ ] Auto city
+
 ### Acknowledgment ###
 This Plugin was initially inspired by [sonichy's weather plugin](https://github.com/sonichy/WEATHER_DDE_DOCK). 
 
