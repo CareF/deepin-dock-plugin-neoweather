@@ -65,7 +65,7 @@ void WeatherItem::refreshIcon() {
     const Dock::DisplayMode displayMode =
             qApp->property(PROP_DISPLAY_MODE).value<Dock::DisplayMode>();
     const int iconSize = (displayMode == Dock::Fashion ?
-            static_cast<int>(std::min(width(), height())) : 24);
+            static_cast<int>(std::min(width(), height()) * 0.95) : 24);
     QString weather;
     weather = client->weatherNowIcon();
     m_iconPixmap = fcstApplet->loadWIcon(weather, iconSize);
