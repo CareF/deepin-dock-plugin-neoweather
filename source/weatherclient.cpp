@@ -71,6 +71,7 @@ const QMap<QString, QString> WeatherClient::WeatherDict(
             {"NA", tr("NA")},
             {"Clear", tr("Clear")},
             {"Rain", tr("Rain")},
+            {"Mist", tr("Mist")}
         });
 
 WeatherClient::WeatherClient(QNetworkAccessManager &net,
@@ -205,8 +206,10 @@ void WeatherClient::parseWeather() {
     }
     emit weatherReady();
     status &= WeatherDone;
-    if (status == AllDone)
+    if (status == AllDone) {
+        log << "Checking all done! Weather info arrived later" << endl;
         checking = false;
+    }
 }
 
 void WeatherClient::parseForecast() {
@@ -249,8 +252,10 @@ void WeatherClient::parseForecast() {
     }
     emit forecastReady();
     status &= ForecastDone;
-    if (status == AllDone)
+    if (status == AllDone) {
+        log << "Checking all done! Forecast info arrived later" << endl;
         checking = false;
+    }
 }
 
 inline void unitTransform (bool isMetric, OpenWeatherClient::Weather &item) {
