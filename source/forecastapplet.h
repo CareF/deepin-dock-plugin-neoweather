@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include "weatherclient.h"
+#include "themeset.h"
 
 #define MAXDAYS 5
 
@@ -14,7 +15,7 @@ class ForecastApplet : public QWidget
 
 public:
     explicit ForecastApplet(const WeatherClient *wcli,
-                           QString theme="hty",
+                           QString theme=themeSet[0],
                            QWidget *parent = nullptr);
     virtual ~ForecastApplet();
 

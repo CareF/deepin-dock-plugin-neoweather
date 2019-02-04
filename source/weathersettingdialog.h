@@ -10,8 +10,7 @@
 #include "dde-dock/pluginsiteminterface.h"
 #include "weatherclient.h"
 #include "weatherplugin.h"
-
-const QStringList themeSet({"hty", "gray"});
+#include "themeset.h"
 
 class WeatherSettingDialog : public DTK_WIDGET_NAMESPACE::DAbstractDialog
 {
