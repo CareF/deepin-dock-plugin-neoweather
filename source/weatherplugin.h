@@ -99,6 +99,10 @@ private:
     QFile logFile;
     QTextStream log;
     QTimer m_refershTimer;
+
+    QTranslator *translator;
+    static QTranslator qtTranslator;
+    static QTranslator *loadTranslator(const QLocale &locale, QObject *parent = nullptr);
 };
 
 #endif // WEATHERPLUGIN_H

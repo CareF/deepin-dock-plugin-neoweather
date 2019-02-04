@@ -1,12 +1,28 @@
 #include "weatherplugin.h"
 #include <QDesktopServices>
 #include <DAboutDialog>
+#include <QApplication>
 #include "weathersettingdialog.h"
+
+QTranslator WeatherPlugin::qtTranslator;
+QTranslator *WeatherPlugin::loadTranslator(const QLocale &locale, QObject *parent) {
+    // This is a dirty trick to load translator before init of config
+    QTranslator* ts = new QTranslator(parent);
+#ifdef QT_DEBUG
+    qDebug() << "---- NeoWeather Plugin: Load Language: " << locale.name();
+#endif
+    ts->load(locale, "neoweather", "-", ":/i18n", ".qm");
+    qtTranslator.load(locale, "qtbase", "_",
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    QApplication::instance()->installTranslator(ts);
+    return ts;
+}
 
 WeatherPlugin::WeatherPlugin (QObject *parent):
     QObject (parent), m_client(nullptr), m_items(nullptr),
     m_popups(nullptr), m_tips(nullptr), netmgr(this),
-    logFile(logPath()), m_refershTimer(this)
+    logFile(logPath()), m_refershTimer(this),
+    translator(loadTranslator(QLocale::system(), this))
 {
 
 }
@@ -18,6 +34,9 @@ WeatherPlugin::~WeatherPlugin () {
     delete m_tips;
     delete m_items;
     delete m_client;
+    QApplication::instance()->removeTranslator(translator);
+    QApplication::instance()->removeTranslator(&qtTranslator);
+    delete translator;
 }
 
 void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
@@ -203,8 +222,8 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
         else if (menuId == ABOUT) {
             DWIDGET_USE_NAMESPACE
             DAboutDialog *about = new DAboutDialog(m_items);
-            about->setWindowTitle(tr("About Weather"));
-            about->setProductName(tr("Deepin Dock Plugin: Weather"));
+            about->setWindowTitle(tr("About NeoWeather"));
+            about->setProductName(tr("Deepin Dock Plugin: NeoWeather"));
             about->setProductIcon(QIcon(":/hty/01d"));
             about->setVersion(VERSION);
             about->setDescription(tr("Author: CareF <me@mail.caref.xyz>"));

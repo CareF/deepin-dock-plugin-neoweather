@@ -66,13 +66,17 @@ QByteArray OpenWeatherClient::netResult(QPointer<QNetworkReply> reply) {
 
 
 /* WeatherClient members */
-const QMap<QString, QString> WeatherClient::WeatherDict(
-{
-            {"NA", tr("NA")},
-            {"Clear", tr("Clear")},
-            {"Rain", tr("Rain")},
-            {"Mist", tr("Mist")}
-        });
+QMap<QString, QString> WeatherClient::WeatherDict;
+void WeatherClient::setupWeatherDict() {
+    // This static method serves for i18n purposes.
+    // TODO: add more
+    WeatherDict = {
+                {"NA", tr("NA")},
+                {"Clear", tr("Clear")},
+                {"Rain", tr("Rain")},
+                {"Mist", tr("Mist")}
+            };
+}
 
 WeatherClient::WeatherClient(QNetworkAccessManager &net,
                              QTextStream &logStream,
@@ -91,6 +95,7 @@ WeatherClient::WeatherClient(QNetworkAccessManager &net,
     forecasts.append(wnow);
     log << "Weather Client inited.. cityid: " << cityid <<
            " country: " << country << " city: " << city << endl;
+    setupWeatherDict();
 }
 
 WeatherClient::~WeatherClient() {

@@ -1,6 +1,6 @@
-QT              += widgets svg network
+QT              += widgets svg network gui
 TEMPLATE         = lib
-CONFIG          += plugin c++11 link_pkgconfig
+CONFIG          += plugin c++11 lrelease embed_translations link_pkgconfig
 PKGCONFIG       += dtkwidget
 
 TARGET           = $$qtLibraryTarget(neoweather)
@@ -33,3 +33,5 @@ target.path = $${PREFIX}/lib/dde-dock/plugins/
 INSTALLS += target
 
 RESOURCES += res.qrc
+
+TRANSLATIONS = $$_PRO_FILE_PWD_/i18n/neoweather-zh_CN.ts

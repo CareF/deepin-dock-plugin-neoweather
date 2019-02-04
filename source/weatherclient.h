@@ -130,7 +130,8 @@ public:
                            QObject *parent = nullptr);
     virtual ~WeatherClient() override;
 
-    static const QMap<QString, QString> WeatherDict;
+    static QMap<QString, QString> WeatherDict;
+    static void setupWeatherDict();
 
     int cityID() const {return cityid;}
     const QString &cityName() const {return city;}
