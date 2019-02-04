@@ -21,48 +21,48 @@
         <file alias="50n">icon/hty/50n.png</file>
     </qresource>
     <qresource prefix="/neoGray">
-        <file>icon/neoGray/01d.png</file>
-        <file>icon/neoGray/01n.png</file>
-        <file>icon/neoGray/02d.png</file>
-        <file>icon/neoGray/02n.png</file>
-        <file>icon/neoGray/03d.png</file>
-        <file>icon/neoGray/03n.png</file>
-        <file>icon/neoGray/04d.png</file>
-        <file>icon/neoGray/04n.png</file>
-        <file>icon/neoGray/09d.png</file>
-        <file>icon/neoGray/09n.png</file>
-        <file>icon/neoGray/10d.png</file>
-        <file>icon/neoGray/10n.png</file>
-        <file>icon/neoGray/11d.png</file>
-        <file>icon/neoGray/11n.png</file>
-        <file>icon/neoGray/13d.png</file>
-        <file>icon/neoGray/13n.png</file>
-        <file>icon/neoGray/50d.png</file>
-        <file>icon/neoGray/50n.png</file>
-        <file>icon/neoGray/na.png</file>
+        <file alias="01d">icon/neoGray/01d.png</file>
+        <file alias="01n">icon/neoGray/01n.png</file>
+        <file alias="02d">icon/neoGray/02d.png</file>
+        <file alias="02n">icon/neoGray/02n.png</file>
+        <file alias="03d">icon/neoGray/03d.png</file>
+        <file alias="03n">icon/neoGray/03n.png</file>
+        <file alias="04d">icon/neoGray/04d.png</file>
+        <file alias="04n">icon/neoGray/04n.png</file>
+        <file alias="09d">icon/neoGray/09d.png</file>
+        <file alias="09n">icon/neoGray/09n.png</file>
+        <file alias="10d">icon/neoGray/10d.png</file>
+        <file alias="10n">icon/neoGray/10n.png</file>
+        <file alias="11d">icon/neoGray/11d.png</file>
+        <file alias="11n">icon/neoGray/11n.png</file>
+        <file alias="13d">icon/neoGray/13d.png</file>
+        <file alias="13n">icon/neoGray/13n.png</file>
+        <file alias="50d">icon/neoGray/50d.png</file>
+        <file alias="50n">icon/neoGray/50n.png</file>
+        <file alias="na">icon/neoGray/na.png</file>
     </qresource>
     <qresource prefix="/">
         <file alias="question">icon/question.svg</file>
     </qresource>
     <qresource prefix="/neoColor">
-        <file>icon/neoColor/01d.png</file>
-        <file>icon/neoColor/01n.png</file>
-        <file>icon/neoColor/02d.png</file>
-        <file>icon/neoColor/02n.png</file>
-        <file>icon/neoColor/03d.png</file>
-        <file>icon/neoColor/03n.png</file>
-        <file>icon/neoColor/04d.png</file>
-        <file>icon/neoColor/04n.png</file>
-        <file>icon/neoColor/09d.png</file>
-        <file>icon/neoColor/09n.png</file>
-        <file>icon/neoColor/10d.png</file>
-        <file>icon/neoColor/10n.png</file>
-        <file>icon/neoColor/11d.png</file>
-        <file>icon/neoColor/11n.png</file>
-        <file>icon/neoColor/13d.png</file>
-        <file>icon/neoColor/13n.png</file>
-        <file>icon/neoColor/50d.png</file>
-        <file>icon/neoColor/50n.png</file>
-        <file>icon/neoColor/na.png</file>
+        <file alias="01d">icon/neoColor/01d.png</file>
+        <file alias="01n">icon/neoColor/01n.png</file>
+        <file alias="02d">icon/neoColor/02d.png</file>
+        <file alias="02n">icon/neoColor/02n.png</file>
+        <file alias="03d">icon/neoColor/03d.png</file>
+        <file alias="03n">icon/neoColor/03n.png</file>
+        <file alias="04d">icon/neoColor/04d.png</file>
+        <file alias="04n">icon/neoColor/04n.png</file>
+        <file alias="09d">icon/neoColor/09d.png</file>
+        <file alias="09n">icon/neoColor/09n.png</file>
+        <file alias="10d">icon/neoColor/10d.png</file>
+        <file alias="10n">icon/neoColor/10n.png</file>
+        <file alias="11d">icon/neoColor/11d.png</file>
+        <file alias="11n">icon/neoColor/11n.png</file>
+        <file alias="13d">icon/neoColor/13d.png</file>
+        <file alias="13n">icon/neoColor/13n.png</file>
+        <file alias="50d">icon/neoColor/50d.png</file>
+        <file alias="50n">icon/neoColor/50n.png</file>
+        <file alias="na">icon/neoColor/na.png</file>
     </qresource>
 </RCC>
