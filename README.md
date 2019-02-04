@@ -1,6 +1,8 @@
 NeoWeather: A DDE Dock Plugin
 ==============================
 
+This is a weather plugin for deepin-dock, with API from [openweathermap](https://openweathermap.org).
+
 ### Installation Guide ###
 For now there's no binary release provided. You can compile it either using Qt Creator or by the following command: 
 
@@ -19,7 +21,7 @@ sudo make install
 
 ### TODO list ###
 
-- [ ] Add i18n support
+- [X] Add i18n support
 - [ ] Icons with night
 - [ ] Cityid look up
 - [ ] Auto city
