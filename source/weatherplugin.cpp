@@ -153,11 +153,13 @@ const QString WeatherPlugin::itemContextMenu(const QString &itemKey) {
         refresh["isActive"] = true;
         items.push_back(refresh);
 
+#ifdef QT_DEBUG
         QMap<QString, QVariant> log;
         log["itemId"] = SHOWLOG;
         log["itemText"] = tr("Show Log");
         log["isActive"] = true;
         items.push_back(log);
+#endif
 
         QMap<QString, QVariant> about;
         about["itemId"] = ABOUT;
@@ -192,10 +194,12 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
         else if (menuId == REFRESH) {
             emit checkUpdate();
         }
+#ifdef QT_DEBUG
         else if (menuId == SHOWLOG) {
             QString surl = "file://" + logPath();
             QDesktopServices::openUrl(QUrl(surl));
         }
+#endif
         else if (menuId == ABOUT) {
             DWIDGET_USE_NAMESPACE
             DAboutDialog *about = new DAboutDialog(m_items);
