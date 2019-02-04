@@ -14,7 +14,8 @@ HEADERS += \
     weatherclient.h \
     forecastapplet.h \
     weathersettingdialog.h \
-    countrycode.h
+    countrycode.h \
+    themeset.h
 
 SOURCES += \
     weatherplugin.cpp \
