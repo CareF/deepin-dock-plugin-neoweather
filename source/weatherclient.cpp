@@ -71,10 +71,13 @@ void WeatherClient::setupWeatherDict() {
     // This static method serves for i18n purposes.
     // TODO: add more
     WeatherDict = {
-                {"NA", tr("NA")},
-                {"Clear", tr("Clear")},
-                {"Rain", tr("Rain")},
-                {"Mist", tr("Mist")}
+        {"NA", tr("NA")},
+        {"Clear", tr("Clear")},
+        {"Clouds", tr("Clouds")},
+        {"Rain", tr("Rain")},
+        {"Mist", tr("Mist")},
+        {"Snow", tr("Snow")},
+        {"Haze", tr("Haze")},
             };
 }
 
