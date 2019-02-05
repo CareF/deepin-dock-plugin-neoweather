@@ -89,7 +89,7 @@ void ForecastApplet::reloadForecast() {
             fcstLabels[n].Date->setText(iter->dateTime.toString(DATEFORMAT));
             fcstLabels[n].WImg->setPixmap(loadWIcon(iter->icon));
             fcstLabels[n].Temp->setText(
-                        QString("%1, %2%3").arg(iter->weather).arg(
+                        QString("%1, %2%3").arg(iter->description).arg(
                             QString::number(qRound(iter->temp))).arg(
                             client->tempUnit()));
             n++;
