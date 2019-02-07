@@ -1,6 +1,7 @@
 #include "forecastapplet.h"
 #include <QApplication> // provide qApp
 
+#define PRIMARYICONSIZE 80
 #define DATEFORMAT "MM/dd ddd"
 
 ForecastApplet::ForecastApplet(const WeatherClient *wcli,
@@ -10,7 +11,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
     setFixedWidth(300);
 
     WImgNow = new QLabel;
-    WImgNow->setPixmap(loadWIcon("na", 80));
+    WImgNow->setPixmap(loadWIcon("na", PRIMARYICONSIZE));
     WImgNow->setAlignment(Qt::AlignCenter);
     defaultLayout.addWidget(WImgNow, 0, 0);
     tempNow = new QLabel("25.0°C");
@@ -28,7 +29,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
         fcstLabels[i].WImg->setPixmap(loadWIcon());
         fcstLabels[i].WImg->setAlignment(Qt::AlignCenter);
         defaultLayout.addWidget(fcstLabels[i].WImg, i+1, 0);
-        fcstLabels[i].Temp = new QLabel("Clear 25.0°C");
+        fcstLabels[i].Temp = new QLabel("Clear\n25.0°C");
         fcstLabels[i].Temp->setAlignment(Qt::AlignCenter);
         fcstLabels[i].Temp->setStyleSheet("font-size:12px;");
         defaultLayout.addWidget(fcstLabels[i].Temp, i+1, 1);
@@ -73,27 +74,52 @@ QPixmap ForecastApplet::loadWIcon(const QString &name, int size) const {
     return iconPixmap;
 }
 
+QVector<WeatherClient::Weather>::const_iterator ForecastApplet::getDayStatic(
+        QVector<WeatherClient::Weather>::const_iterator iter,
+        double &temp_min, double &temp_max,
+        const WeatherClient::Weather **p_primary) const {
+    //TODO: secondary weather?
+    QDate theDay = iter->dateTime.date();
+    temp_min = iter->temp_min;
+    temp_max = iter->temp_max;
+    *p_primary = iter;
+    for(iter++; iter != client->getForecast().end() &&
+        iter->dateTime.date() == theDay; iter++) {
+        if (iter->temp_max > temp_max) {
+            temp_max = iter->temp_max;
+        }
+        if (iter->temp_min < temp_min) {
+            temp_min = iter->temp_min;
+        }
+        if (iter->weatherID / 100 < (*p_primary)->weatherID / 100 &&
+                iter->weatherID % 100 > (*p_primary)->weatherID % 100) {
+            // Get the most serious condition
+            *p_primary = iter;
+        }
+    }
+    return iter;
+}
+
 void ForecastApplet::reloadForecast() {
-    auto forcasts = client->getForecast();
-    WImgNow->setPixmap(loadWIcon(forcasts[0].icon, 80));
-    tempNow->setText(QString::number(forcasts[0].temp, 'f', 1)+
-                     client->tempUnit());
+    const QVector<WeatherClient::Weather> &forecasts = client->getForecast();
+    double temp_min, temp_max;
+    const WeatherClient::Weather *primary;
+    QVector<WeatherClient::Weather>::const_iterator next = getDayStatic(
+                forecasts.begin(), temp_min, temp_max, &primary);
+    WImgNow->setPixmap(loadWIcon(primary->icon, PRIMARYICONSIZE));
+    tempNow->setText(QString("%1 ~ %2%3").arg(temp_min, 0, 'f', 1).arg(
+                         temp_max, 0, 'f', 1).arg(client->tempUnit()));
     cityNow->setText(client->cityName());
 
     int n = 0;
-    for (auto iter = forcasts.begin() + 1;
-         iter != forcasts.end() && n < MAXDAYS;
-         iter++) {
-        if (iter->dateTime.time() == QTime(12, 0, 0)) {
-            // TODO: Do a post processing for daily statistics
-            fcstLabels[n].Date->setText(iter->dateTime.toString(DATEFORMAT));
-            fcstLabels[n].WImg->setPixmap(loadWIcon(iter->icon));
-            fcstLabels[n].Temp->setText(
-                        QString("%1, %2%3").arg(iter->description).arg(
-                            QString::number(qRound(iter->temp))).arg(
-                            client->tempUnit()));
-            n++;
-        }
+    while (next != forecasts.end() && n < MAXDAYS) {
+        next = getDayStatic(next, temp_min, temp_max, &primary);
+        fcstLabels[n].WImg->setPixmap(loadWIcon(primary->icon));
+        fcstLabels[n].Temp->setText(QString("%1\n%2 ~ %3%4").arg(primary->description).arg(
+                                        temp_min, 0, 'f', 1).arg(temp_max, 0, 'f', 1).arg(
+                                        client->tempUnit()));
+        fcstLabels[n].Date->setText(primary->dateTime.date().toString(DATEFORMAT));
+        n++;
     }
     for (; n < MAXDAYS; n++) {
         fcstLabels[n].Date->setText(tr("N/A"));
@@ -103,7 +129,7 @@ void ForecastApplet::reloadForecast() {
 }
 
 void ForecastApplet::updateError(OpenWeatherClient::ErrorCode e) {
-    WImgNow->setPixmap(loadWIcon("na", 80));
+    WImgNow->setPixmap(loadWIcon("na", PRIMARYICONSIZE));
     tempNow->setText(tr("Error: %1").arg(e));
     for (auto & f: fcstLabels) {
         f.Date->setText(tr("N/A"));

@@ -37,6 +37,11 @@ private:
     } fcstLabels[MAXDAYS];
     QGridLayout defaultLayout;
 
+    QVector<WeatherClient::Weather>::const_iterator getDayStatic(
+            const WeatherClient::Weather *start,
+            double &temp_min, double &temp_max,
+            const WeatherClient::Weather **p_primaryWeather) const;
+
 };
 
 #endif // FORECASTWIDGET_H
