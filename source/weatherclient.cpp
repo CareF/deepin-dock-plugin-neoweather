@@ -92,7 +92,7 @@ WeatherClient::WeatherClient(QNetworkAccessManager &net,
     cityid(icityid), city(icity), country(icountry),
     isMetric(ismetric), lang(QLocale::system().name()),
     last(QDateTime::fromSecsSinceEpoch(0, QTimeZone::utc())),
-    wnow(Weather({last, "na", "na", "na", 0, 0, 0, 0, 0, 0, 0, 0})),
+    wnow(Weather({last, 800, "na", "na", "na", 0, 0, 0, 0, 0, 0, 0, 0})),
     status(NoneDone)
 {
     forecasts.append(wnow);
@@ -166,6 +166,7 @@ inline OpenWeatherClient::Weather jWeatherParser(const QJsonObject &w) {
     // See https://openweathermap.org/current for more info
     return OpenWeatherClient::Weather(
     {QDateTime::fromSecsSinceEpoch(w.value("dt").toInt(), QTimeZone::utc()),       // datetime
+     w.value("weather").toArray().at(0).toObject().value("id").toInt(),             // weather id
      w.value("weather").toArray().at(0).toObject().value("main").toString(),        // weather
      w.value("weather").toArray().at(0).toObject().value("description").toString(), // description
      w.value("weather").toArray().at(0).toObject().value("icon").toString(),        // icon
@@ -212,12 +213,12 @@ void WeatherClient::parseWeather() {
                    wnow.weather).arg(wnow.description).arg(
                    wnow.icon).arg(wnow.temp) << endl;
     }
-    emit weatherReady();
-    status &= WeatherDone;
+    status |= WeatherDone;
     if (status == AllDone) {
         log << "Checking all done! Weather info arrived later" << endl;
         checking = false;
     }
+    emit weatherReady();
 }
 
 void WeatherClient::parseForecast() {
@@ -258,12 +259,12 @@ void WeatherClient::parseForecast() {
                    o.weather).arg(o.description).arg(
                    o.icon).arg(o.temp) << endl;
     }
-    emit forecastReady();
-    status &= ForecastDone;
+    status |= ForecastDone;
     if (status == AllDone) {
         log << "Checking all done! Forecast info arrived later" << endl;
         checking = false;
     }
+    emit forecastReady();
 }
 
 inline void unitTransform (bool isMetric, OpenWeatherClient::Weather &item) {

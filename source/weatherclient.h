@@ -48,7 +48,7 @@ public:
     };
     struct Weather {
         // See https://openweathermap.org/current for more info
-        QDateTime dateTime;
+        QDateTime dateTime; int weatherID;
         QString weather; QString description; QString icon;
         double temp; double temp_min; double temp_max;
         double pressure; int humidity; double wind; int windDeg;
@@ -200,7 +200,7 @@ private:
         NoneDone = 0x0000,
         WeatherDone = 0x0001,
         ForecastDone = 0x0002,
-        AllDone = WeatherDone & ForecastDone
+        AllDone = WeatherDone | ForecastDone
     } ;
     QFlags<Status> status;
 
