@@ -14,7 +14,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
     WImgNow->setPixmap(loadWIcon("na", PRIMARYICONSIZE));
     WImgNow->setAlignment(Qt::AlignCenter);
     defaultLayout.addWidget(WImgNow, 0, 0);
-    tempNow = new QLabel("25.0°C");
+    tempNow = new QLabel("-25~25°C");
     tempNow->setAlignment(Qt::AlignCenter);
     tempNow->setStyleSheet("font-size:20px;");
     defaultLayout.addWidget(tempNow, 0, 1);
@@ -29,7 +29,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
         fcstLabels[i].WImg->setPixmap(loadWIcon());
         fcstLabels[i].WImg->setAlignment(Qt::AlignCenter);
         defaultLayout.addWidget(fcstLabels[i].WImg, i+1, 0);
-        fcstLabels[i].Temp = new QLabel("Clear\n25.0°C");
+        fcstLabels[i].Temp = new QLabel("Clear\n-25~25°C");
         fcstLabels[i].Temp->setAlignment(Qt::AlignCenter);
         fcstLabels[i].Temp->setStyleSheet("font-size:12px;");
         defaultLayout.addWidget(fcstLabels[i].Temp, i+1, 1);
@@ -107,8 +107,8 @@ void ForecastApplet::reloadForecast() {
     QVector<WeatherClient::Weather>::const_iterator next = getDayStatic(
                 forecasts.begin(), temp_min, temp_max, &primary);
     WImgNow->setPixmap(loadWIcon(primary->icon, PRIMARYICONSIZE));
-    tempNow->setText(QString("%1 ~ %2%3").arg(temp_min, 0, 'f', 1).arg(
-                         temp_max, 0, 'f', 1).arg(client->tempUnit()));
+    tempNow->setText(QString("%1 ~ %2%3").arg(qRound(temp_min)).arg(
+                         qRound(temp_max)).arg(client->tempUnit()));
     cityNow->setText(client->cityName());
 
     int n = 0;
@@ -116,7 +116,7 @@ void ForecastApplet::reloadForecast() {
         next = getDayStatic(next, temp_min, temp_max, &primary);
         fcstLabels[n].WImg->setPixmap(loadWIcon(primary->icon));
         fcstLabels[n].Temp->setText(QString("%1\n%2 ~ %3%4").arg(primary->description).arg(
-                                        temp_min, 0, 'f', 1).arg(temp_max, 0, 'f', 1).arg(
+                                        qRound(temp_min)).arg(qRound(temp_max)).arg(
                                         client->tempUnit()));
         fcstLabels[n].Date->setText(primary->dateTime.date().toString(DATEFORMAT));
         n++;
