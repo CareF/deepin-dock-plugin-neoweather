@@ -22,7 +22,7 @@ sudo make install
 ### TODO list ###
 
 - [X] Add i18n support
-- [X] Icons with night (Night icons have been added to neoGray & neoGrayS themes, neoColor yet to be upgraded)
+- [X] Add Night Icons to themes
 - [ ] Cityid look up
 - [ ] Auto city
 
