@@ -8,7 +8,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
                              QString thm, QWidget *parent)
     : QWidget(parent), client(wcli), themeName(thm)
 {
-    setFixedWidth(300);
+    setFixedWidth(250);
 
     WImgNow = new QLabel;
     WImgNow->setPixmap(loadWIcon("na", PRIMARYICONSIZE));
@@ -16,11 +16,11 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
     defaultLayout.addWidget(WImgNow, 0, 0);
     tempNow = new QLabel("-25~25°C");
     tempNow->setAlignment(Qt::AlignCenter);
-    tempNow->setStyleSheet("font-size:20px;");
+    tempNow->setStyleSheet("font-size:15px;");
     defaultLayout.addWidget(tempNow, 0, 1);
     cityNow = new QLabel("City");
     cityNow->setAlignment(Qt::AlignCenter);
-    cityNow->setStyleSheet("font-size:20px;");
+    cityNow->setStyleSheet("font-size:15px;");
     defaultLayout.addWidget(cityNow, 0, 2);
 
     const QDate today = QDate::currentDate();
@@ -31,11 +31,11 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
         defaultLayout.addWidget(fcstLabels[i].WImg, i+1, 0);
         fcstLabels[i].Temp = new QLabel("Clear\n-25~25°C");
         fcstLabels[i].Temp->setAlignment(Qt::AlignCenter);
-        fcstLabels[i].Temp->setStyleSheet("font-size:12px;");
+        fcstLabels[i].Temp->setStyleSheet("font-size:10px;");
         defaultLayout.addWidget(fcstLabels[i].Temp, i+1, 1);
         fcstLabels[i].Date = new QLabel(
                     today.addDays(i+1).toString(DATEFORMAT));
-        fcstLabels[i].Date->setStyleSheet("font-size:12px;");
+        fcstLabels[i].Date->setStyleSheet("font-size:10px;");
         fcstLabels[i].Date->setAlignment(Qt::AlignCenter);
         defaultLayout.addWidget(fcstLabels[i].Date, i+1, 2);
     }
