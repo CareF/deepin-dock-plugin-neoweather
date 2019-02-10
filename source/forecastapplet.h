@@ -7,7 +7,7 @@
 #include "weatherclient.h"
 #include "themeset.h"
 
-#define MAXDAYS 5
+#define MAXDAYS 7
 
 class ForecastApplet : public QWidget
 {
