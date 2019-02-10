@@ -1,7 +1,7 @@
 #include "forecastapplet.h"
 #include <QApplication> // provide qApp
 
-#define PRIMARYICONSIZE 80
+#define PRIMARYICONSIZE 65
 #define DATEFORMAT "MM/dd ddd"
 
 ForecastApplet::ForecastApplet(const WeatherClient *wcli,
