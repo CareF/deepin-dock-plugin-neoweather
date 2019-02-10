@@ -9,6 +9,6 @@
  * In the `res.qrc` file it's expected to set alias of the icon codes:
  * `01d`, `01n`, ..., `04n`, `09d`, ..., `13d`, `13n`, `50d`, `50n`, `na`
  */
-const QStringList themeSet({"neoGray", "neoGrayS", "neoColor", "hty"});
+const QStringList themeSet({"neoGray", "neoGrayS", "neoColor"});
 
 #endif // THEMESET_H
