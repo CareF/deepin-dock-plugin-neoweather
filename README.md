@@ -22,7 +22,7 @@ sudo make install
 ### TODO list ###
 
 - [X] Add i18n support
-- [X] Icons with night
+- [X] Add Night Icons to themes
 - [ ] Cityid look up
 - [ ] Auto city
 
