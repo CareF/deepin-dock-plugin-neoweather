@@ -226,11 +226,12 @@ void WeatherPlugin::invokedMenuItem(const QString &itemKey,
             about->setProductName(tr("Deepin Dock Plugin: NeoWeather"));
             about->setProductIcon(QIcon(":/hty/01d"));
             about->setVersion(VERSION);
-            about->setDescription(tr("Author: CareF <me@mail.caref.xyz>"));
+            about->setDescription(tr("Author: CareF <me@mail.caref.xyz>\n"
+                                     "UI Designer: @aiamuzz"));
             // void setCompanyLogo(const QPixmap &companyLogo);
             about->setWebsiteName(tr("Source Code (GitHub)"));
             about->setWebsiteLink("https://github.com/CareF/deepin-dock-plugin-weather");
-            // void setAcknowledgementLink(const QString &acknowledgementLink);
+            about->setAcknowledgementLink("https://github.com/CareF/deepin-dock-plugin-neoweather#acknowledgment");
             about->setLicense(tr("License: GPLv3.0"));
 
             about->setWindowModality(Qt::NonModal);
