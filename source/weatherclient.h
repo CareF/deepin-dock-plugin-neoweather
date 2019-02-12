@@ -143,6 +143,7 @@ public:
         return wnow.weather;}
     const QString &weatherNowDesc() const {return wnow.description;}
     const QString &weatherNowIcon() const {return wnow.icon;}
+    const Weather &weatherNow() const {return wnow;}
     inline QString tempUnit() const {return isMetric? "°C" : "°F";}
     inline QString windUnit() const {return isMetric? "m/s" : "mi/h";}
     QString tempNow() const {
@@ -171,6 +172,8 @@ signals:
     void weatherReady();
     /** Asynchronous signal after calling checkWeather(), with forecasts ready */
     void forecastReady();
+    /** Asynchronous signal after calling checkWeather(), with both weatherNow and forecasts ready */
+    void allReady();
     /** changed() means sth. other than weatherReady or forwcastReady, e.g. unit */
     void changed();
 

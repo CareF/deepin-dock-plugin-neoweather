@@ -41,7 +41,7 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
     }
 
     setLayout(&defaultLayout);
-    connect(client, &WeatherClient::forecastReady,
+    connect(client, &WeatherClient::allReady,
             this, &ForecastApplet::reloadForecast);
     connect(client, &WeatherClient::changed,
             this, &ForecastApplet::reloadForecast);
@@ -104,8 +104,16 @@ void ForecastApplet::reloadForecast() {
     const QVector<WeatherClient::Weather> &forecasts = client->getForecast();
     double temp_min, temp_max;
     const WeatherClient::Weather *primary;
-    QVector<WeatherClient::Weather>::const_iterator next = getDayStatic(
-                forecasts.begin(), temp_min, temp_max, &primary);
+    QVector<WeatherClient::Weather>::const_iterator next = forecasts.begin();
+    if (next->dateTime.date() == QDate::currentDate()) {
+        // Today is included in the forecast
+        next = getDayStatic(forecasts.begin(), temp_min, temp_max, &primary);
+    }
+    else {
+        primary = &client->weatherNow();
+        temp_min = primary->temp_min;
+        temp_max = primary->temp_max;
+    }
     WImgNow->setPixmap(loadWIcon(primary->icon, PRIMARYICONSIZE));
     tempNow->setText(QString("%1 ~ %2%3").arg(qRound(temp_min)).arg(
                          qRound(temp_max)).arg(client->tempUnit()));

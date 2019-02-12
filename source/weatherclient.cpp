@@ -217,6 +217,9 @@ void WeatherClient::parseWeather() {
     if (status == AllDone) {
         log << "Checking all done! Weather info arrived later" << endl;
         checking = false;
+        emit forecastReady();
+        emit allReady();
+        return;
     }
     emit weatherReady();
 }
@@ -263,6 +266,9 @@ void WeatherClient::parseForecast() {
     if (status == AllDone) {
         log << "Checking all done! Forecast info arrived later" << endl;
         checking = false;
+        emit forecastReady();
+        emit allReady();
+        return;
     }
     emit forecastReady();
 }
