@@ -9,6 +9,10 @@ ForecastApplet::ForecastApplet(const WeatherClient *wcli,
     client (wcli), themeName(thm)
 {
     ui->setupUi(this);
+    ui->wImgNow->setPixmap(loadWIcon("na", 80));
+    ui->wimg1->setPixmap(loadWIcon("na"));
+    ui->wimg2->setPixmap(loadWIcon("na"));
+    ui->wimg3->setPixmap(loadWIcon("na"));
     connect(client, &WeatherClient::allReady,
             this, &ForecastApplet::reloadForecast);
     connect(client, &WeatherClient::changed,
