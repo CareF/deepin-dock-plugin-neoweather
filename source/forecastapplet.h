@@ -1,13 +1,16 @@
-#ifndef FORECASTWIDGET_H
-#define FORECASTWIDGET_H
+#ifndef FORECASTAPPLET_H
+#define FORECASTAPPLET_H
 
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QLabel>
 #include "weatherclient.h"
 #include "themeset.h"
 
 #define MAXDAYS 5
+
+namespace Ui {
+class ForecastApplet;
+}
 
 class ForecastApplet : public QWidget
 {
@@ -29,19 +32,16 @@ public slots:
     void updateError(OpenWeatherClient::ErrorCode);
 
 private:
+    Ui::ForecastApplet *ui;
     const WeatherClient *client;
     QString themeName;
     QPointer<QLabel> WImgNow, cityNow, tempNow;
-    struct ForecastColumn {
-        QPointer<QLabel> Date, WImg, Temp;
-    } fcstLabels[MAXDAYS];
-    QGridLayout defaultLayout;
 
-    QVector<WeatherClient::Weather>::const_iterator getDayStatic(
+    QVector<WeatherClient::Weather>::const_iterator getDayStat(
             const WeatherClient::Weather *start,
             double &temp_min, double &temp_max,
             const WeatherClient::Weather **p_primaryWeather) const;
 
 };
 
-#endif // FORECASTWIDGET_H
+#endif // FORECASTAPPLET_H
