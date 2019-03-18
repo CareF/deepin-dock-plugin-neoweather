@@ -17,6 +17,6 @@ const QStringList themeSet({"neoGrayS", "neoGray", "neoColor", "hty"});
  */
 const QMap<QString, QString> langSet = {{"", ""},
                                         {"简体中文", "zh_CN"},
-                                        {"Turkish", "tr"}};
+                                        {"Türkçe", "tr"}};
 
 #endif // THEMESET_H

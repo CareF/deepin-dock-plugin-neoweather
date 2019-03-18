@@ -32,7 +32,7 @@
     <message>
         <location filename="../weatherclient.cpp" line="76"/>
         <source>Clouds</source>
-        <translation type="unfinished"></translation>
+        <translation>Bulutlu</translation>
     </message>
     <message>
         <location filename="../weatherclient.cpp" line="77"/>
@@ -47,12 +47,12 @@
     <message>
         <location filename="../weatherclient.cpp" line="79"/>
         <source>Snow</source>
-        <translation type="unfinished"></translation>
+        <translation>Kar Yağışlı</translation>
     </message>
     <message>
         <location filename="../weatherclient.cpp" line="80"/>
         <source>Haze</source>
-        <translation type="unfinished"></translation>
+        <translation>Hafif Sisli</translation>
     </message>
     <message>
         <location filename="../weatherclient.h" line="154"/>
@@ -115,7 +115,8 @@
         <location filename="../weatherplugin.cpp" line="240"/>
         <source>Author: CareF &lt;me@mail.caref.xyz&gt;
 UI Designer: @aiamuzz</source>
-        <translation type="unfinished"></translation>
+        <translation>Geliştirici: CareF &lt;me@mail.caref.xyz&gt;
+Arayüz Tasarımcısı: @aiamuzz</translation>
     </message>
     <message>
         <source>Author: CareF &lt;me@mail.caref.xyz&gt;</source>
@@ -202,17 +203,17 @@ UI Designer: @aiamuzz</source>
     <message>
         <location filename="../weathersettingdialog.cpp" line="157"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Dil</translation>
     </message>
     <message>
         <location filename="../weathersettingdialog.cpp" line="158"/>
         <source>System Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistem Dili</translation>
     </message>
     <message>
         <location filename="../weathersettingdialog.cpp" line="162"/>
         <source>You may need to restart the dock to make language setting effective.</source>
-        <translation type="unfinished"></translation>
+        <translation>Değişikliklerin etkili olması için sisteminizi yeniden başlatmanız gerekebilir.</translation>
     </message>
     <message>
         <location filename="../weathersettingdialog.cpp" line="170"/>
