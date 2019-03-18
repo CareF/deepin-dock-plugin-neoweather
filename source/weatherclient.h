@@ -138,6 +138,8 @@ public:
     const QString &countryName() const {return country;}
     const QDateTime &lastUpdate() const {return last;}
     const QString weatherNowText() const {
+        if (lang.startsWith("zh"))
+            return wnow.description;
         if (WeatherDict.contains(wnow.weather))
             return WeatherDict[wnow.weather];
         return wnow.weather;}
