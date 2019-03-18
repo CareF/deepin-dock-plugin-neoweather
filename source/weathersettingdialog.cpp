@@ -223,8 +223,12 @@ void WeatherSettingDialog::accept() {
                             metricButton->isChecked());
     m_proxyInter->saveValue(m_weatherPlugin, APPID_KEY,
                             appidBox->text());
-    m_proxyInter->saveValue(m_weatherPlugin, CHK_INTERVAL_KEY,
-                            timeIntvBox->text().chopped(4).toInt());
+    bool ok;
+    int time = timeIntvBox->text().split(" ")[0].toInt(&ok);
+    if (time <= 0 || !ok) {
+        time = 30;
+    }
+    m_proxyInter->saveValue(m_weatherPlugin, CHK_INTERVAL_KEY, time);
     if (langBox->currentIndex() == 0) {
         m_proxyInter->saveValue(m_weatherPlugin, LANG_KEY, "");
     }
