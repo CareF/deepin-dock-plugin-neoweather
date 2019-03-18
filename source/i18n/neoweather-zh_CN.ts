@@ -4,15 +4,15 @@
 <context>
     <name>ForecastApplet</name>
     <message>
-        <location filename="../forecastapplet.cpp" line="99"/>
-        <location filename="../forecastapplet.cpp" line="101"/>
-        <location filename="../forecastapplet.cpp" line="109"/>
-        <location filename="../forecastapplet.cpp" line="111"/>
+        <location filename="../forecastapplet.cpp" line="133"/>
+        <location filename="../forecastapplet.cpp" line="135"/>
+        <location filename="../forecastapplet.cpp" line="143"/>
+        <location filename="../forecastapplet.cpp" line="145"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
     <message>
-        <location filename="../forecastapplet.cpp" line="107"/>
+        <location filename="../forecastapplet.cpp" line="141"/>
         <source>Error: %1</source>
         <translation>错误: %1</translation>
     </message>
@@ -20,41 +20,56 @@
 <context>
     <name>WeatherClient</name>
     <message>
-        <location filename="../weatherclient.cpp" line="73"/>
+        <location filename="../weatherclient.cpp" line="74"/>
         <source>NA</source>
         <translation>NA</translation>
     </message>
     <message>
-        <location filename="../weatherclient.cpp" line="74"/>
+        <location filename="../weatherclient.cpp" line="75"/>
         <source>Clear</source>
         <translation>晴</translation>
     </message>
     <message>
-        <location filename="../weatherclient.cpp" line="75"/>
+        <location filename="../weatherclient.cpp" line="76"/>
+        <source>Clouds</source>
+        <translation>多云</translation>
+    </message>
+    <message>
+        <location filename="../weatherclient.cpp" line="77"/>
         <source>Rain</source>
         <translation>雨</translation>
     </message>
     <message>
-        <location filename="../weatherclient.cpp" line="76"/>
+        <location filename="../weatherclient.cpp" line="78"/>
         <source>Mist</source>
         <translation>雾</translation>
     </message>
     <message>
-        <location filename="../weatherclient.h" line="153"/>
+        <location filename="../weatherclient.cpp" line="79"/>
+        <source>Snow</source>
+        <translation>雪</translation>
+    </message>
+    <message>
+        <location filename="../weatherclient.cpp" line="80"/>
+        <source>Haze</source>
+        <translation>霾</translation>
+    </message>
+    <message>
+        <location filename="../weatherclient.h" line="154"/>
         <source>Humidity: %1%
 </source>
         <translation>湿度: %1%
 </translation>
     </message>
     <message>
-        <location filename="../weatherclient.h" line="154"/>
+        <location filename="../weatherclient.h" line="155"/>
         <source>Wind: %1%2, %3°
 </source>
         <translation>风速: %1%2, %3°
 </translation>
     </message>
     <message>
-        <location filename="../weatherclient.h" line="156"/>
+        <location filename="../weatherclient.h" line="157"/>
         <source>Last Check: %3</source>
         <translation>上次更新: %3</translation>
     </message>
@@ -62,57 +77,63 @@
 <context>
     <name>WeatherPlugin</name>
     <message>
-        <location filename="../weatherplugin.cpp" line="42"/>
+        <location filename="../weatherplugin.cpp" line="72"/>
         <source>Checking... </source>
         <translation>更新中... </translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="146"/>
+        <location filename="../weatherplugin.cpp" line="176"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="152"/>
+        <location filename="../weatherplugin.cpp" line="182"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="159"/>
+        <location filename="../weatherplugin.cpp" line="189"/>
         <source>Show Log</source>
         <translation>显示日志</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="166"/>
+        <location filename="../weatherplugin.cpp" line="196"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="206"/>
+        <location filename="../weatherplugin.cpp" line="236"/>
         <source>About NeoWeather</source>
         <translation>关于 NeoWeather</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="207"/>
+        <location filename="../weatherplugin.cpp" line="237"/>
         <source>Deepin Dock Plugin: NeoWeather</source>
         <translation>Deepin Dock 插件: NeoWeather</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="210"/>
-        <source>Author: CareF &lt;me@mail.caref.xyz&gt;</source>
-        <translation>作者: CareF &lt;me@mail.caref.xyz&gt;</translation>
+        <location filename="../weatherplugin.cpp" line="240"/>
+        <source>Author: CareF &lt;me@mail.caref.xyz&gt;
+UI Designer: @aiamuzz</source>
+        <translation>作者: CareF &lt;me@mail.caref.xyz&gt;
+UI 设计: @aiamuzz</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="212"/>
+        <source>Author: CareF &lt;me@mail.caref.xyz&gt;</source>
+        <translation type="vanished">作者: CareF &lt;me@mail.caref.xyz&gt;</translation>
+    </message>
+    <message>
+        <location filename="../weatherplugin.cpp" line="243"/>
         <source>Source Code (GitHub)</source>
         <translation>源代码 (GitHub)</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.cpp" line="215"/>
+        <location filename="../weatherplugin.cpp" line="246"/>
         <source>License: GPLv3.0</source>
         <translation>许可证: GPLv3.0</translation>
     </message>
     <message>
-        <location filename="../weatherplugin.h" line="57"/>
+        <location filename="../weatherplugin.h" line="58"/>
         <source>NeoWeather</source>
         <translation>天气 NeoWeather</translation>
     </message>
@@ -181,16 +202,31 @@
     </message>
     <message>
         <location filename="../weathersettingdialog.cpp" line="157"/>
+        <source>Language</source>
+        <translation>语言</translation>
+    </message>
+    <message>
+        <location filename="../weathersettingdialog.cpp" line="158"/>
+        <source>System Language</source>
+        <translation>系统语言</translation>
+    </message>
+    <message>
+        <location filename="../weathersettingdialog.cpp" line="162"/>
+        <source>You may need to restart the dock to make language setting effective.</source>
+        <translation>你可能需要重启 dock 以启用新的语言设置</translation>
+    </message>
+    <message>
+        <location filename="../weathersettingdialog.cpp" line="170"/>
         <source>appid from openweathermap.org</source>
         <translation>openweathermap.org 的 appid</translation>
     </message>
     <message>
-        <location filename="../weathersettingdialog.cpp" line="163"/>
+        <location filename="../weathersettingdialog.cpp" line="176"/>
         <source>AppID</source>
         <translation>AppID</translation>
     </message>
     <message>
-        <location filename="../weathersettingdialog.cpp" line="170"/>
+        <location filename="../weathersettingdialog.cpp" line="183"/>
         <source>The plugin default appid is proviede by the author. Click to learn how to get your own appid.</source>
         <translation>插件作者提供了默认的 appid. 点击这里获取你自己的 appid.</translation>
     </message>

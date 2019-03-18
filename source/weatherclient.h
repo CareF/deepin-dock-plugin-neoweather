@@ -166,6 +166,7 @@ public:
     void setCity(int id) {cityid = id; }
     void setCity(const CityInfo &info) {
         cityid = info.id; city = info.name; country = info.country; }
+    void setLang(const QString &l) {lang = l;}
 
 signals:
     /** Asynchronous signal after calling checkWeather(), with weatherNow ready */

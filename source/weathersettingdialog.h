@@ -10,7 +10,7 @@
 #include "dde-dock/pluginsiteminterface.h"
 #include "weatherclient.h"
 #include "weatherplugin.h"
-#include "themeset.h"
+#include "constants.h"
 
 class WeatherSettingDialog : public DTK_WIDGET_NAMESPACE::DAbstractDialog
 {
@@ -43,6 +43,7 @@ private:
     QPointer<QRadioButton> metricButton;
     QPointer<QRadioButton> imperialButton;
     QPointer<QLineEdit> appidBox;
+    QPointer<QComboBox> langBox;
 
     void loadSettings();
 
