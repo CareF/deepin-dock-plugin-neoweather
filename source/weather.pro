@@ -15,7 +15,7 @@ HEADERS += \
     forecastapplet.h \
     weathersettingdialog.h \
     countrycode.h \
-    themeset.h
+    constants.h
 
 SOURCES += \
     weatherplugin.cpp \
@@ -34,4 +34,6 @@ INSTALLS += target
 
 RESOURCES += res.qrc
 
-TRANSLATIONS = $$_PRO_FILE_PWD_/i18n/neoweather-zh_CN.ts
+TRANSLATIONS = \
+    $$_PRO_FILE_PWD_/i18n/neoweather-zh_CN.ts \
+    $$_PRO_FILE_PWD_/i18n/neoweather-tr.ts

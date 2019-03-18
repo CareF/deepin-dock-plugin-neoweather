@@ -81,7 +81,7 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     m_cityLookupClient(new CityLookup(net, logStream, this)),
     cityBox(new QComboBox(this)), countryBox(new LimitedHightComboBox(500, this)),
     themeBox(new QComboBox(this)), timeIntvBox(new QLineEdit(this)),
-    appidBox(new AppidBox(this))
+    appidBox(new AppidBox(this)), langBox(new QComboBox(this))
 {
     QVBoxLayout *vLayout = new QVBoxLayout();
 
@@ -154,14 +154,27 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     themeBox->setMaximumWidth(OPTIONS_WIDTH);
     settingLayout->addWidget(themeBox, 2, 1);
 
+    settingLayout->addWidget(new QLabel(tr("Language")), 3, 0);
+    QString defaultLang = tr("System Language");
+    langBox->addItems(langSet.keys());
+    langBox->setItemText(0, defaultLang);
+    langBox->setMaximumWidth(OPTIONS_WIDTH);
+    langBox->setToolTip(tr("You may need to restart the dock to make language setting effective."));
+    QString lang = m_proxyInter->getValue(m_weatherPlugin, LANG_KEY,
+                                          defaultLang).toString();
+    if (lang == "")
+        lang = defaultLang;
+    langBox->setCurrentText(langSet.key(lang, defaultLang));
+    settingLayout->addWidget(langBox, 3, 1);
+
     appidBox->setPlaceholderText(tr("appid from openweathermap.org"));
     if (appid != "") {
         appidBox->setText(appid);
     }
     connect(appidBox, &QLineEdit::textEdited,
             this, &WeatherSettingDialog::newAppidInput);
-    settingLayout->addWidget(new QLabel(tr("AppID")), 3, 0);
-    settingLayout->addWidget(appidBox, 3, 1);
+    settingLayout->addWidget(new QLabel(tr("AppID")), 4, 0);
+    settingLayout->addWidget(appidBox, 4, 1);
 //    QPushButton* appidHelp = new QPushButton("?");
 //    appidHelp->setMaximumWidth(appidHelp->fontMetrics().size(
 //                                   Qt::TextShowMnemonic, " ? ").width());
@@ -172,7 +185,7 @@ WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
     appidHelp->installEventFilter(appidBox);
     connect(appidHelp, &QToolButton::released, [=](){
         QDesktopServices::openUrl(QUrl("https://openweathermap.org/appid"));});
-    settingLayout->addWidget(appidHelp, 3, 2);
+    settingLayout->addWidget(appidHelp, 4, 2);
     optionGroup->setLayout(settingLayout);
     vLayout->addWidget(optionGroup);
 
@@ -212,6 +225,13 @@ void WeatherSettingDialog::accept() {
                             appidBox->text());
     m_proxyInter->saveValue(m_weatherPlugin, CHK_INTERVAL_KEY,
                             timeIntvBox->text().chopped(4).toInt());
+    if (langBox->currentIndex() == 0) {
+        m_proxyInter->saveValue(m_weatherPlugin, LANG_KEY, "");
+    }
+    else {
+        m_proxyInter->saveValue(m_weatherPlugin, LANG_KEY,
+                                langSet[langBox->currentText()]);
+    }
     QDialog::accept();
 }
 

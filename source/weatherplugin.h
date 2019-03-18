@@ -25,6 +25,7 @@
 #define UNIT_KEY "isMetric"
 #define CHK_INTERVAL_KEY "chk_intvl"
 #define APPID_KEY "appid"
+#define LANG_KEY "lang"
 
 #define MINUTE 60000 // minute in ms
 #define DEFAULT_INTERVAL 30 //min
@@ -77,6 +78,11 @@ public:
 
     friend WeatherSettingDialog;
 
+    ///
+    /// \brief reloadLang: this load translations from settings
+    ///
+    void reloadLang();
+
 signals:
     ///
     /// \brief checkUpdate: manually check updates
@@ -102,6 +108,11 @@ private:
 
     QTranslator *translator;
     static QTranslator qtTranslator;
+
+    ///
+    /// \brief loadTranslator: This is used when initialize the plugin, using only system
+    /// language, to make the dock read the tranlslated names.
+    ///
     static QTranslator *loadTranslator(const QLocale &locale, QObject *parent = nullptr);
 };
 

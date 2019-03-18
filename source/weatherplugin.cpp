@@ -15,6 +15,7 @@ QTranslator *WeatherPlugin::loadTranslator(const QLocale &locale, QObject *paren
     qtTranslator.load(locale, "qtbase", "_",
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QApplication::instance()->installTranslator(ts);
+    QApplication::instance()->installTranslator(&qtTranslator);
     return ts;
 }
 
@@ -39,12 +40,22 @@ WeatherPlugin::~WeatherPlugin () {
     delete translator;
 }
 
+void WeatherPlugin::reloadLang() {
+    QString lang = m_proxyInter->getValue(this, LANG_KEY, "").toString();
+    if (lang != "") {
+        QApplication::instance()->removeTranslator(translator);
+        translator->load(lang, "neoweather", "-", ":/i18n", ".qm");
+        QApplication::instance()->installTranslator(translator);
+    }
+}
+
 void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     this->m_proxyInter = proxyInter;
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         qDebug() << "Cannot open log file";
     log.setDevice(&logFile);
     log << "Start!" << endl;
+    reloadLang();
     m_client = new WeatherClient(
                 netmgr, log,
                 m_proxyInter->getValue(this, CITYID_KEY, 0).toInt(),

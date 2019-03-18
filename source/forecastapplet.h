@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include "weatherclient.h"
-#include "themeset.h"
+#include "constants.h"
 
 #define MAXDAYS 5
 
