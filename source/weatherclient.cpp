@@ -5,7 +5,7 @@
 #include <QTimeZone>
 #define LOGTIMEFORMAT "yyyy/MM/dd HH:mm:ss"
 
-#define DEFAULTAPPID "8c3a954fdf4092d93ecf8e7039dbb6ea"
+#define DEFAULTAPPID "5cdf0b925cb0a95f1151ec3c2f3be33b"
 
 
 /* OpenWeatherClient members */
