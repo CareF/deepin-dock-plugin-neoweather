@@ -91,7 +91,7 @@ WeatherClient::WeatherClient(QNetworkAccessManager &net,
     weatherReply(nullptr), forecastReply(nullptr),
     cityid(icityid), city(icity), country(icountry),
     isMetric(ismetric), lang(QLocale::system().name()),
-    last(QDateTime::fromSecsSinceEpoch(0, QTimeZone::utc())),
+    last(QDateTime::fromMSecsSinceEpoch(0, QTimeZone::utc())),
     wnow(Weather({last, 800, "na", "na", "na", 0, 0, 0, 0, 0, 0, 0, 0})),
     status(NoneDone)
 {
@@ -165,7 +165,7 @@ void WeatherClient::errorHandle(ErrorCode e){
 inline OpenWeatherClient::Weather jWeatherParser(const QJsonObject &w) {
     // See https://openweathermap.org/current for more info
     return OpenWeatherClient::Weather(
-    {QDateTime::fromSecsSinceEpoch(w.value("dt").toInt(), QTimeZone::utc()),       // datetime
+    {QDateTime::fromMSecsSinceEpoch(w.value("dt").toInt()*1000, QTimeZone::utc()),  // datetime
      w.value("weather").toArray().at(0).toObject().value("id").toInt(),             // weather id
      w.value("weather").toArray().at(0).toObject().value("main").toString(),        // weather
      w.value("weather").toArray().at(0).toObject().value("description").toString(), // description
