@@ -1,3 +1,6 @@
+# Qt i18n files
+*.qm
+
 # C++ objects and libs
 *.slo
 *.lo
