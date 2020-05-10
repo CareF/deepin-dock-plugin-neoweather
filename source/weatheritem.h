@@ -29,6 +29,7 @@ private:
     const WeatherClient *client;
     const ForecastApplet *fcstApplet;
     QPixmap m_iconPixmap;
+    QFont m_font;
 };
 
 #endif // WEATHERWIDGET_H

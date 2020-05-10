@@ -1,10 +1,12 @@
 #include "weatheritem.h"
 #include "dde-dock/constants.h" // provide Dock::DisplayMode
+#include "DFontSizeManager" // provide DFontSizeManager
 #include <QApplication> // provide qApp
 #include <QPainter>
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif
+
 
 WeatherItem::WeatherItem(const WeatherClient *wcli,
                          const ForecastApplet *popups,
@@ -25,15 +27,22 @@ void WeatherItem::paintEvent(QPaintEvent *e) {
                 PROP_DISPLAY_MODE).value<Dock::DisplayMode>();
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    // painter.setRenderHint(QPainter::Antialiasing);
 
     if (displayMode == Dock::Efficient) {
-        painter.setPen(Qt::white);
+        m_font = DTK_WIDGET_NAMESPACE::DFontSizeManager::instance()->t8();
+        QFontMetrics fm(m_font);
         QString format = "%1\n%2";
+        QString weatherString(
+                    format.arg(client->weatherNowText()).arg(
+                        client->tempNow()));
+        // QSize weatherSize = fm.boundingRect(weatherString).size();
+        // painter.setPen(Qt::white);
+        painter.setFont(m_font);
+        painter.setPen(QPen(palette().brightText(), 1));
         // TODO: weathernowtext to weathernowdesc for i18n?
         painter.drawText(rect(), Qt::AlignCenter,
-                         format.arg(client->weatherNowText()).arg(
-                             client->tempNow()));
+                         weatherString);
     }
     else {
         const QRectF &rf = QRectF(rect());
@@ -62,10 +71,9 @@ QSize WeatherItem::sizeHint() const {
 }
 
 void WeatherItem::refreshIcon() {
-    const Dock::DisplayMode displayMode =
-            qApp->property(PROP_DISPLAY_MODE).value<Dock::DisplayMode>();
-    const int iconSize = (displayMode == Dock::Fashion ?
-            static_cast<int>(std::min(width(), height()) * 0.95) : 24);
+//    const Dock::DisplayMode displayMode =
+//            qApp->property(PROP_DISPLAY_MODE).value<Dock::DisplayMode>();
+    const int iconSize = PLUGIN_ICON_MAX_SIZE;
     QString weather;
     weather = client->weatherNowIcon();
     m_iconPixmap = fcstApplet->loadWIcon(weather, iconSize);

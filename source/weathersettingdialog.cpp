@@ -70,7 +70,7 @@ bool AppidBox::eventFilter(QObject *watched, QEvent *event) {
 
 DWIDGET_USE_NAMESPACE
 
-#define OPTIONS_WIDTH 100
+#define OPTIONS_WIDTH 150
 WeatherSettingDialog::WeatherSettingDialog(PluginProxyInterface *proxyInter,
                                            WeatherPlugin *weatherplugin,
                                            QNetworkAccessManager &net,
