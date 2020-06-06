@@ -42,7 +42,7 @@ WeatherPlugin::~WeatherPlugin () {
 
 void WeatherPlugin::reloadLang() {
     QString lang = m_proxyInter->getValue(this, LANG_KEY, "").toString();
-    if (lang != "") {
+    if (lang != "" && lang != "en") {
         QApplication::instance()->removeTranslator(translator);
         translator->load(lang, "neoweather", "-", ":/i18n", ".qm");
         QApplication::instance()->installTranslator(translator);
@@ -55,7 +55,7 @@ void WeatherPlugin::init(PluginProxyInterface *proxyInter) {
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         qDebug() << "Cannot open log file";
     log.setDevice(&logFile);
-    log << "Start!" << endl;
+    log << "Start!" << Qt::endl;
     m_client = new WeatherClient(
                 netmgr, log,
                 m_proxyInter->getValue(this, CITYID_KEY, 0).toInt(),

@@ -16,6 +16,7 @@ const QStringList themeSet({"neoGrayS", "neoGray", "neoColor", "hty"});
  * The first String is the default choice (system Language).
  */
 const QMap<QString, QString> langSet = {{"", ""},
+                                        {"English", "en"},
                                         {"简体中文", "zh_CN"},
                                         {"Türkçe", "tr"}};
 
