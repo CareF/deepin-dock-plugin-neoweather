@@ -4,7 +4,9 @@ NeoWeather: A DDE Dock Plugin
 This is a weather plugin for deepin-dock, with API from [openweathermap](https://openweathermap.org).
 
 ### Installation Guide ###
-For now there's no binary release provided. You can compile it either using Qt Creator or by the following command: 
+For Arch users, there's AUR version [deepin-dock-plugin-neoweather](https://aur.archlinux.org/packages/deepin-dock-plugin-neoweather/).
+
+For other DDE users, you can compile it either using Qt Creator or by the following command: 
 
 ```
 mkdir build
