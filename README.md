@@ -1,6 +1,9 @@
 NeoWeather: A DDE Dock Plugin
 ==============================
 
+**This repo is no longer actively maintaining, due to breaking changes from deepin and lack of API docs**
+
+
 This is a weather plugin for deepin-dock, with API from [openweathermap](https://openweathermap.org).
 
 ### Installation Guide ###
